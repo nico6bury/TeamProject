@@ -34,18 +34,18 @@ public class Board extends JPanel {
 		Point[] pointLocations = new Point[4];
 		int ct = 0;
 		boolean cont = true;
+		int shift = ((cols - p.getShape().length) / 2) + 1;
 
 		for (int i = 0; i < p.getShape().length; i++) {
-			int shift = 0;
 			// Shift down already placed blocks.
 			int ct2 = 0;
 			for (Point pointShift : pointLocations) {
 				if (pointShift != null) {
 					pointShift.setColor(Color.DARK_GRAY);
 					int x = pointShift.getXCoordinate() + 1;
-					int y = pointShift.getYCoordinate() + shift;
-					points[x][y + shift].setColor(Color.ORANGE);
-					pointLocations[ct2] = points[x][y + shift];
+					int y = pointShift.getYCoordinate();
+					points[x][y].setColor(p.getColor());
+					pointLocations[ct2] = points[x][y];
 					ct2++;
 				}
 			}
@@ -57,7 +57,6 @@ public class Board extends JPanel {
 					ct++;
 				}
 			}
-			shift = 0;
 			Thread.sleep(500);
 		}
 
@@ -66,11 +65,16 @@ public class Board extends JPanel {
 			for (Point pointShift : pointLocations) {
 				if (pointShift != null) {
 					try {
-						pointShift.setColor(Color.DARK_GRAY);
 						int x = pointShift.getXCoordinate() + 1;
 						int y = pointShift.getYCoordinate();
-						points[x][y].setColor(Color.ORANGE);
-						pointLocations[ct2] = points[x][y];
+						if (!(x < rows)) {
+							cont = false;
+						}
+						if (cont) {
+							pointShift.setColor(Color.DARK_GRAY);
+							points[x][y].setColor(p.getColor());
+							pointLocations[ct2] = points[x][y];
+						}
 						ct2++;
 					} catch (ArrayIndexOutOfBoundsException e) {
 						cont = false;

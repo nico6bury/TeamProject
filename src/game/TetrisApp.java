@@ -3,7 +3,7 @@ package game;
 import javax.swing.JFrame;
 
 import board.Board;
-import pieces.LPiece;
+import pieces.DogPiece;
 
 public class TetrisApp {
 	public static void main(String[] args) {
@@ -17,9 +17,9 @@ public class TetrisApp {
 		Board board = new Board();
 		frame.add(board);
 		frame.setVisible(true);
-		
+
 		try {
-			board.placePiece(new LPiece());
+			board.placePiece(new DogPiece());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
