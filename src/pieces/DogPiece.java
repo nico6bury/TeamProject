@@ -3,7 +3,17 @@ package pieces;
 import java.awt.Color;
 import java.util.Random;
 
+/**
+ * DogPiece is a representation of the tetris piece commonly referred to as a
+ * "dog piece"
+ * 
+ * @author Brian
+ *
+ */
 public class DogPiece extends GenericPiece {
+	/**
+	 * Creates a DogPiece object
+	 */
 	public DogPiece() {
 		Random r = new Random();
 		int f = r.nextInt();

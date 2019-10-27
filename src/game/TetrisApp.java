@@ -1,27 +1,30 @@
 package game;
 
-import javax.swing.JFrame;
+import java.util.Random;
 
 import board.Board;
 import pieces.DogPiece;
+import pieces.LPiece;
 
 public class TetrisApp {
 	public static void main(String[] args) {
 		// Create and display the board
-		JFrame frame = new JFrame();
-		frame.setSize(400, 800);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setResizable(false);
-		frame.setTitle("CIS 200 Tetris App");
-
 		Board board = new Board();
-		frame.add(board);
-		frame.setVisible(true);
-
-		try {
-			board.placePiece(new DogPiece());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		board.setVisible(true);
+		
+		Random random = new Random();
+		while(true) {
+			int next = random.nextInt(2);
+			switch(next) {
+			case 0:
+				board.placePiece(new LPiece());
+				break;
+			case 1:
+				board.placePiece(new DogPiece());
+				break;
+			default:
+				System.out.println("ERROR, Invalid piece option: " + next);
+			}
 		}
 	}
 }

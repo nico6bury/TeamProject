@@ -3,7 +3,17 @@ package pieces;
 import java.awt.Color;
 import java.util.Random;
 
+/**
+ * LPiece is a representation of the tetris piece commonly referred to as a "L
+ * piece"
+ * 
+ * @author Brian
+ *
+ */
 public class LPiece extends GenericPiece {
+	/**
+	 * Creates a LPiece object
+	 */
 	public LPiece() {
 		Random r = new Random();
 		int f = r.nextInt();

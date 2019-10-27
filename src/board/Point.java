@@ -5,12 +5,20 @@ import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import pieces.GenericPiece;
+
 public class Point extends JPanel {
+	/**
+	 * Generated Serial Version ID
+	 */
+	private static final long serialVersionUID = -1690345195968992411L;
 	private int x;
 	private int y;
+	private boolean inUse;
 
 	public Point(int x, int y) {
 		// Create looks
+		inUse = false;
 		this.x = x;
 		this.y = y;
 		this.setBackground(Color.DARK_GRAY);
@@ -41,7 +49,7 @@ public class Point extends JPanel {
 	public boolean equals(Point p) {
 		return ((x == p.getX()) && (y == p.getY()));
 	}
-	
+
 	public int getXCoordinate() {
 		return x;
 	}
@@ -49,12 +57,27 @@ public class Point extends JPanel {
 	public int getYCoordinate() {
 		return y;
 	}
-	
+
 	public void setColor(Color c) {
 		this.setBackground(c);
 	}
-	
+
 	public Color getColor() {
 		return this.getBackground();
+	}
+
+	public void setInUse(GenericPiece p) {
+		this.setColor(p.getColor());
+		this.inUse = true;
+		
+	}
+
+	public void setNotUsing() {
+		this.setColor(Color.DARK_GRAY);
+		this.inUse = false;
+	}
+
+	public boolean getInUse() {
+		return this.inUse;
 	}
 }
