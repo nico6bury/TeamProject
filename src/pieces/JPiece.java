@@ -8,16 +8,16 @@ import java.awt.Color;
  * 
  * @author Brian Edits to original: Stephanie
  */
-public class LPiece extends GenericPiece {
+public class JPiece extends GenericPiece {
 	/**
 	 * Creates a LPiece object
 	 */
-	public LPiece() {
-		addShape(new int[][] { { 0, 0, 1 }, { 1, 1, 1 }, { 0, 0, 0 } });
-		addShape(new int[][] { { 1, 1, 0 }, { 0, 1, 0 }, { 0, 1, 0 } });
+	public JPiece() {
+		addShape(new int[][] { { 1, 0, 0 }, { 1, 1, 1 }, { 0, 0, 0 } });
+		addShape(new int[][] { { 0, 1, 0 }, { 0, 1, 0 }, { 1, 1, 0 } });
 		addShape(new int[][] { { 0, 0, 0 }, { 1, 1, 1 }, { 1, 0, 0 } });
 		addShape(new int[][] { { 0, 1, 0 }, { 0, 1, 0 }, { 0, 1, 1 } });
 		this.setCurrentShape(0);
-		this.setColor(Color.ORANGE);
+		this.setColor(Color.BLUE);
 	}
 }

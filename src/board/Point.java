@@ -69,7 +69,12 @@ public class Point extends JPanel {
 	public void setInUse(GenericPiece p) {
 		this.setColor(p.getColor());
 		this.inUse = true;
-		
+
+	}
+
+	public void setInUse(Color c) {
+		this.setColor(c);
+		this.inUse = true;
 	}
 
 	public void setNotUsing() {

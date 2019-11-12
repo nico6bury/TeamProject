@@ -1,6 +1,7 @@
 package pieces;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 /**
  * GenericPiece is the class that all piece objects are built off of and holds
@@ -9,16 +10,31 @@ import java.awt.Color;
  * @author Brian
  *
  */
-public class GenericPiece {
-	/**
-	 * A 2 dimensional integer array of the shape of the piece where a 1 means that
-	 * there is a block and a 0 means there is not.
-	 */
-	private int[][] shape;
+public abstract class GenericPiece {
 	/**
 	 * The color of the piece.
 	 */
 	private Color color;
+	private ArrayList<int[][]> possibleShapes = new ArrayList<>();
+	private int currentShapeIndex = 0;
+
+	/**
+	 * getColor returns the color of the piece.
+	 * 
+	 * @return The color of the piece.
+	 */
+	public Color getColor() {
+		return color;
+	}
+
+	/**
+	 * setColor sets the color of the piece.
+	 * 
+	 * @param color
+	 */
+	public void setColor(Color color) {
+		this.color = color;
+	}
 
 	/**
 	 * getShape returns the 2D array representing the shape of the piece.
@@ -26,30 +42,22 @@ public class GenericPiece {
 	 * @return int[][] representing the shape.
 	 */
 	public int[][] getShape() {
-		return shape;
+		return possibleShapes.get(currentShapeIndex);
 	}
 
-	/**
-	 * setShape sets the shape of the object.
-	 * 
-	 * @param shape int[][] representing the shape.
-	 */
-	public void setShape(int[][] shape) {
-		this.shape = shape;
+	public void addShape(int[][] shape) {
+		this.possibleShapes.add(shape);
 	}
 
-	/**
-	 * getColor returns the color of the piece.
-	 * @return The color of the piece.
-	 */
-	public Color getColor() {
-		return color;
+	public ArrayList<int[][]> getShapeOptions() {
+		return this.possibleShapes;
 	}
-	/**
-	 * setColor sets the color of the piece.
-	 * @param color
-	 */
-	public void setColor(Color color) {
-		this.color = color;
+
+	public int getCurrentShapeIndex() {
+		return this.currentShapeIndex;
+	}
+
+	public void setCurrentShape(int currentShape) {
+		this.currentShapeIndex = currentShape;
 	}
 }

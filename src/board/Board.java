@@ -6,7 +6,11 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
+import pieces.ZPiece;
 import pieces.GenericPiece;
+import pieces.LPiece;
+import pieces.StickPiece;
+import pieces.TPiece;
 
 /**
  * Board contains methods relating to piece movement, gameplay, and also manages
@@ -25,15 +29,16 @@ public class Board extends JFrame implements KeyListener {
 	private int rows = 20;
 	private int boardWidth = 400;
 	private int boardHeight = 800;
-	int horzShift = 0;
-	int vertShift = 0;
+	private int horzShift = 0;
+	private int vertShift = 0;
+	private boolean needsTurn = false;
 	private Point[][] points;
 
 	/**
 	 * Creates the board for the game.
 	 */
 	public Board() {
-		setSize(400, 800);
+		setSize(300, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
 		setTitle("CIS 200 Tetris App");
@@ -67,31 +72,38 @@ public class Board extends JFrame implements KeyListener {
 		boolean playingPiece = true;
 		long dropTimer = System.currentTimeMillis();
 		int TIME_GIVEN = 500;
-		horzShift = ((cols - p.getShape().length) / 2) + 1;
+		horzShift = ((cols - p.getShape()[0].length) / 2) + 1;
 		int tempHorzShift = horzShift;
 		vertShift = 0;
 		int tempVertShift = vertShift;
 		int onRow = 0;
+
+		// Place the piece initially, all pieces start out horizontal, so 2 height
+		while (onRow < 2) {
+			for (int j = 0; j < p.getShape()[onRow].length; j++) {
+				if (p.getShape()[onRow][j] == 1) {
+					points[0][j + horzShift].setColor(p.getColor());
+					pointLocations[ct] = points[0][j + horzShift];
+					ct++;
+				}
+			}
+			onRow++;
+			if (onRow < 2) {
+				playingPiece = shiftDown(pointLocations, p);
+			}
+		}
 
 		while (playingPiece) {
 			if (tempHorzShift != horzShift) {
 				shiftSide(pointLocations, p, horzShift - tempHorzShift);
 				tempHorzShift = horzShift;
 			}
+			if (needsTurn) {
+				needsTurn = false;
+			}
 			if (dropTimer + TIME_GIVEN <= System.currentTimeMillis() || tempVertShift != vertShift) {
 				// Shift already placed parts
 				playingPiece = shiftDown(pointLocations, p);
-
-				// Continue placing shape if not done
-				if (onRow < p.getShape().length) {
-					for (int j = 0; j < p.getShape()[onRow].length; j++) {
-						if (p.getShape()[onRow][j] == 1) {
-							points[0][j + horzShift].setColor(p.getColor());
-							pointLocations[ct] = points[0][j + horzShift];
-							ct++;
-						}
-					}
-				}
 				onRow++;
 				dropTimer = System.currentTimeMillis();
 				tempVertShift = vertShift;
@@ -117,7 +129,7 @@ public class Board extends JFrame implements KeyListener {
 					pointLocations[index] = points[row][col];
 					point.setNotUsing();
 					index++;
-					if (row >= this.rows - 1 || points[row+1][col].getInUse()) {
+					if (row >= this.rows - 1 || points[row + 1][col].getInUse()) {
 						cont = false;
 					}
 				} catch (ArrayIndexOutOfBoundsException e) {
@@ -187,8 +199,13 @@ public class Board extends JFrame implements KeyListener {
 			}
 		}
 		if (e.getKeyCode() == 40) {
-			if (this.horzShift < cols) {
+			if (this.vertShift < rows) {
 				vertShift += 1;
+			}
+		}
+		if (e.getKeyCode() == 38) {
+			if (this.horzShift > 0) {
+				needsTurn = true;
 			}
 		}
 	}
