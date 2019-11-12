@@ -6,11 +6,7 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
-import pieces.ZPiece;
 import pieces.GenericPiece;
-import pieces.LPiece;
-import pieces.StickPiece;
-import pieces.TPiece;
 
 /**
  * Board contains methods relating to piece movement, gameplay, and also manages
@@ -158,6 +154,9 @@ public class Board extends JFrame implements KeyListener {
 		for (Point point : pointLocations) {
 			if (point != null) {
 				if (pointLocations[index].getYCoordinate() + amt >= this.cols) {
+					doIt = false;
+				}
+				if(pointLocations[index].getYCoordinate() + amt  < 0) {
 					doIt = false;
 				}
 				index++;
