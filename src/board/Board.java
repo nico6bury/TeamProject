@@ -1,6 +1,7 @@
 package board;
 
 import java.awt.GridLayout;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -34,6 +35,7 @@ public class Board extends JPanel {
 	private int vertShift = 0;
 	private boolean needsTurn = false;
 	private Point[][] points;
+	private ArrayList<Point> placedPoints;
 
 	/**
 	 * Creates the board for the game.
@@ -47,6 +49,7 @@ public class Board extends JPanel {
 		this.setLayout(layout);
 
 		// Generate Points
+		placedPoints = new ArrayList<>();
 		points = new Point[rows][cols];
 		for (int i = 0; i < rows; i++) {
 			for (int k = 0; k < cols; k++) {
@@ -74,7 +77,7 @@ public class Board extends JPanel {
 		vertShift = 0;
 		int tempVertShift = vertShift;
 		int onRow = 0;
-
+		boolean hasHitBottom = false;
 		// Place the piece initially, all pieces start out horizontal, so 2 height
 		while (onRow < 2) {
 			for (int j = 0; j < p.getShape()[onRow].length; j++) {
@@ -107,6 +110,16 @@ public class Board extends JPanel {
 				dropTimer = System.currentTimeMillis();
 				tempVertShift = vertShift;
 			}
+			if(!playingPiece && !hasHitBottom) {
+				hasHitBottom = true;
+				playingPiece = true;
+			}
+		}
+		// Add placed points
+		for (Point point : pointLocations) {
+			if (point != null) {
+				placedPoints.add(point);
+			}
 		}
 		// Check each row for whether or not it can be cleared, and clear it.
 	}
@@ -129,11 +142,11 @@ public class Board extends JPanel {
 					pointLocations[index] = points[row][col];
 					point.setNotUsing();
 					index++;
-					if (row >= this.rows - 1 || points[row + 1][col].getInUse()) {
+					if ((row >= this.rows - 1) || points[row + 1][col].getInUse()) {
 						cont = false;
 					}
 				} catch (ArrayIndexOutOfBoundsException e) {
-
+					cont = false;
 				}
 			}
 		}
@@ -153,14 +166,17 @@ public class Board extends JPanel {
 	 * @param amt            The amount to shift the piece.
 	 */
 	private void shiftSide(Point[] pointLocations, GenericPiece p, int amt) {
-		int index = 0;
+		int index = 0; // Index of looping through the pointLocations
 		boolean doIt = true;
 		for (Point point : pointLocations) {
 			if (point != null) {
-				if (pointLocations[index].getYCoordinate() + amt >= this.cols) {
+				if (pointLocations[index].getYCoordinate() + amt >= this.cols
+						|| pointLocations[index].getYCoordinate() + amt < 0) {
 					doIt = false;
 				}
-				if (pointLocations[index].getYCoordinate() + amt < 0) {
+				if (placedPoints
+						.contains((points[pointLocations[index].getXCoordinate()][pointLocations[index].getYCoordinate()
+								+ amt]))) {
 					doIt = false;
 				}
 				index++;
