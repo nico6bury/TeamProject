@@ -1,12 +1,17 @@
 package board;
 
 import java.awt.GridLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import pieces.GenericPiece;
+import pieces.JPiece;
+import pieces.LPiece;
+import pieces.SPiece;
+import pieces.SquarePiece;
+import pieces.StickPiece;
+import pieces.TPiece;
+import pieces.ZPiece;
 
 /**
  * Board contains methods relating to piece movement, gameplay, and also manages
@@ -15,7 +20,7 @@ import pieces.GenericPiece;
  * @author Brian
  *
  */
-public class Board extends JFrame implements KeyListener {
+public class Board extends JPanel {
 	/**
 	 * Generated Serial Version ID
 	 */
@@ -23,8 +28,8 @@ public class Board extends JFrame implements KeyListener {
 	// Tetris board size is 10 X 20
 	private int cols = 10;
 	private int rows = 20;
-	private int boardWidth = 400;
-	private int boardHeight = 800;
+	private int boardWidth = 300;
+	private int boardHeight = 600;
 	private int horzShift = 0;
 	private int vertShift = 0;
 	private boolean needsTurn = false;
@@ -34,11 +39,7 @@ public class Board extends JFrame implements KeyListener {
 	 * Creates the board for the game.
 	 */
 	public Board() {
-		setSize(300, 600);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setResizable(false);
-		setTitle("CIS 200 Tetris App");
-		addKeyListener(this);
+		setSize(boardWidth, boardHeight);
 
 		// Create Grid
 		this.setSize(boardWidth, boardHeight);
@@ -95,7 +96,9 @@ public class Board extends JFrame implements KeyListener {
 				tempHorzShift = horzShift;
 			}
 			if (needsTurn) {
+				pointLocations = rotate(pointLocations, p, onRow);
 				needsTurn = false;
+				tempHorzShift = horzShift;
 			}
 			if (dropTimer + TIME_GIVEN <= System.currentTimeMillis() || tempVertShift != vertShift) {
 				// Shift already placed parts
@@ -105,6 +108,7 @@ public class Board extends JFrame implements KeyListener {
 				tempVertShift = vertShift;
 			}
 		}
+		// Check each row for whether or not it can be cleared, and clear it.
 	}
 
 	/**
@@ -156,7 +160,7 @@ public class Board extends JFrame implements KeyListener {
 				if (pointLocations[index].getYCoordinate() + amt >= this.cols) {
 					doIt = false;
 				}
-				if(pointLocations[index].getYCoordinate() + amt  < 0) {
+				if (pointLocations[index].getYCoordinate() + amt < 0) {
 					doIt = false;
 				}
 				index++;
@@ -181,35 +185,111 @@ public class Board extends JFrame implements KeyListener {
 		}
 	}
 
-	@Override
-	public void keyPressed(KeyEvent e) {
+	/**
+	 * Rotates the piece to the next rotation option.
+	 * 
+	 * @param pointLocations The locations of the current points of the piece.
+	 * @param p              The piece to rotate.
+	 * @param currentRow     The current row that the piece is on.
+	 * @return A Point[] of the points that the piece is using.
+	 */
+	private Point[] rotate(Point[] pointLocations, GenericPiece p, int currentRow) {
+		int ind = 0;
+		Point[] newPoints = new Point[10];
+		if (p instanceof JPiece) {
+			ind = (p.getCurrentShapeIndex() == 3 ? 0 : p.getCurrentShapeIndex() + 1);
+		} else if (p instanceof LPiece) {
+			ind = (p.getCurrentShapeIndex() == 3 ? 0 : p.getCurrentShapeIndex() + 1);
+		} else if (p instanceof SPiece) {
+			ind = (p.getCurrentShapeIndex() == 1 ? 0 : 1);
+		} else if (p instanceof SquarePiece) {
+			return pointLocations;
+		} else if (p instanceof StickPiece) {
+			ind = (p.getCurrentShapeIndex() == 1 ? 0 : 1);
+		} else if (p instanceof TPiece) {
+			ind = (p.getCurrentShapeIndex() == 3 ? 0 : p.getCurrentShapeIndex() + 1);
+		} else if (p instanceof ZPiece) {
+			ind = (p.getCurrentShapeIndex() == 1 ? 0 : 1);
+		} else {
+			System.out.println("Tried to rotated invalid piece");
+			System.exit(0);
+		}
+		int[][] newShape = p.getShapeOptions().get(ind);
+		int ct = 0;
+		for (int i = 0; i < newShape.length; i++) {
+			for (int j = 0; j < newShape[i].length; j++) {
+				if (newShape[i][j] == 1 && currentRow + newShape.length > this.rows + 1) {
+					return pointLocations;
+				}
+			}
+		}
+
+		p.setCurrentShape(ind);
+		for (Point rp : pointLocations) {
+			if (rp != null) {
+				rp.setNotUsing();
+			}
+		}
+		for (int i = 0; i < newShape.length; i++) {
+			for (int j = 0; j < newShape[i].length; j++) {
+				if (newShape[i][j] == 1) {
+					while (j + horzShift >= this.cols) {
+						shiftSide(newPoints, p, -1);
+						horzShift -= 1;
+					}
+					while (currentRow - newShape.length < 0) {
+						shiftDown(newPoints, p);
+						currentRow++;
+					}
+					points[currentRow - newShape.length][j + horzShift].setColor(p.getColor());
+					newPoints[ct] = points[currentRow - newShape.length][j + horzShift];
+					ct++;
+				}
+			}
+			shiftDown(newPoints, p);
+		}
+		needsTurn = false;
+		return newPoints;
 	}
 
-	@Override
-	public void keyReleased(KeyEvent e) {
-		if (e.getKeyCode() == 37) {
-			if (this.horzShift > 0) {
-				horzShift -= 1;
-			}
-		}
-		if (e.getKeyCode() == 39) {
-			if (this.horzShift < cols) {
-				horzShift += 1;
-			}
-		}
-		if (e.getKeyCode() == 40) {
-			if (this.vertShift < rows) {
-				vertShift += 1;
-			}
-		}
-		if (e.getKeyCode() == 38) {
-			if (this.horzShift > 0) {
-				needsTurn = true;
-			}
-		}
+	public int getHorzShift() {
+		return horzShift;
 	}
 
-	@Override
-	public void keyTyped(KeyEvent e) {
+	public void setHorzShift(int horzShift) {
+		this.horzShift = horzShift;
 	}
+
+	public int getVertShift() {
+		return vertShift;
+	}
+
+	public void setVertShift(int vertShift) {
+		this.vertShift = vertShift;
+	}
+
+	public boolean isNeedsTurn() {
+		return needsTurn;
+	}
+
+	public void setNeedsTurn(boolean needsTurn) {
+		this.needsTurn = needsTurn;
+	}
+
+	public int getCols() {
+		return cols;
+	}
+
+	public void setCols(int cols) {
+		this.cols = cols;
+	}
+
+	public int getRows() {
+		return rows;
+	}
+
+	public void setRows(int rows) {
+		this.rows = rows;
+	}
+
 }

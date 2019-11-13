@@ -3,6 +3,7 @@ package game;
 import java.util.Random;
 
 import board.Board;
+import board.GameFrame;
 import pieces.JPiece;
 import pieces.LPiece;
 import pieces.SPiece;
@@ -14,13 +15,14 @@ import pieces.ZPiece;
 public class TetrisApp {
 	public static void main(String[] args) {
 		// Create and display the board
-		Board board = new Board();
-		board.setVisible(true);
-		
+		GameFrame gf = new GameFrame();
+		gf.setVisible(true);
+		Board board = gf.getBoard();
+
 		Random random = new Random();
-		while(true) {
+		while (true) {
 			int next = random.nextInt(7);
-			switch(next) {
+			switch (next) {
 			case 0:
 				board.placePiece(new JPiece());
 				break;
