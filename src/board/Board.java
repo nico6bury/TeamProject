@@ -2,6 +2,7 @@ package board;
 
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.JPanel;
 
@@ -27,10 +28,10 @@ public class Board extends JPanel {
 	 */
 	private static final long serialVersionUID = 1844384893749121953L;
 	// Tetris board size is 10 X 20
-	private int cols = 10;
-	private int rows = 20;
-	private int boardWidth = 300;
-	private int boardHeight = 600;
+	private static final int COLS = 10;
+	private static final int ROWS = 20;
+	private static final int BOARD_WIDTH = 300;
+	private static final int BOARD_HEIGHT = 600;
 	private int horzShift = 0;
 	private int vertShift = 0;
 	private boolean needsTurn = false;
@@ -41,18 +42,18 @@ public class Board extends JPanel {
 	 * Creates the board for the game.
 	 */
 	public Board() {
-		setSize(boardWidth, boardHeight);
+		setSize(BOARD_WIDTH, BOARD_HEIGHT);
 
 		// Create Grid
-		this.setSize(boardWidth, boardHeight);
-		GridLayout layout = new GridLayout(rows, cols);
+		this.setSize(BOARD_WIDTH, BOARD_HEIGHT);
+		GridLayout layout = new GridLayout(ROWS, COLS);
 		this.setLayout(layout);
 
-		// Generate Points
+		// Generate Points on the board
 		placedPoints = new ArrayList<>();
-		points = new Point[rows][cols];
-		for (int i = 0; i < rows; i++) {
-			for (int k = 0; k < cols; k++) {
+		points = new Point[ROWS][COLS];
+		for (int i = 0; i < ROWS; i++) {
+			for (int k = 0; k < COLS; k++) {
 				points[i][k] = new Point(i, k);
 				this.add(points[i][k]);
 			}
@@ -67,61 +68,72 @@ public class Board extends JPanel {
 	 * @param p The piece to place.
 	 */
 	public void placePiece(GenericPiece p) {
-		Point[] pointLocations = new Point[10];
-		int ct = 0;
+		Point[] pieceLocations = new Point[10];
+		int placeCounter = 0;
 		boolean playingPiece = true;
 		long dropTimer = System.currentTimeMillis();
 		int TIME_GIVEN = 500;
-		horzShift = ((cols - p.getShape()[0].length) / 2) + 1;
-		int tempHorzShift = horzShift;
+		horzShift = ((COLS - p.getShape()[0].length) / 2) + 1;
 		vertShift = 0;
+		int tempHorzShift = horzShift;
 		int tempVertShift = vertShift;
 		int onRow = 0;
-		boolean hasHitBottom = false;
+
 		// Place the piece initially, all pieces start out horizontal, so 2 height
 		while (onRow < 2) {
+			// Place all parts of the piece that are on the current row
 			for (int j = 0; j < p.getShape()[onRow].length; j++) {
 				if (p.getShape()[onRow][j] == 1) {
 					points[0][j + horzShift].setColor(p.getColor());
-					pointLocations[ct] = points[0][j + horzShift];
-					ct++;
+					pieceLocations[placeCounter] = points[0][j + horzShift];
+					placeCounter++;
 				}
 			}
+			// Shift down a row if not on row 2
 			onRow++;
 			if (onRow < 2) {
-				playingPiece = shiftDown(pointLocations, p);
+				playingPiece = shiftDown(pieceLocations, p);
 			}
 		}
 
 		while (playingPiece) {
+			// Check if the piece needs to shift to the side.
 			if (tempHorzShift != horzShift) {
-				shiftSide(pointLocations, p, horzShift - tempHorzShift);
+				shiftSide(pieceLocations, p, horzShift - tempHorzShift);
 				tempHorzShift = horzShift;
 			}
+			// Check if the piece needs to rotate.
 			if (needsTurn) {
-				pointLocations = rotate(pointLocations, p, onRow);
+				pieceLocations = rotate(pieceLocations, p, onRow);
 				needsTurn = false;
 				tempHorzShift = horzShift;
 			}
+			// Check if the piece needs to move down.
 			if (dropTimer + TIME_GIVEN <= System.currentTimeMillis() || tempVertShift != vertShift) {
 				// Shift already placed parts
-				playingPiece = shiftDown(pointLocations, p);
+				playingPiece = shiftDown(pieceLocations, p);
 				onRow++;
 				dropTimer = System.currentTimeMillis();
 				tempVertShift = vertShift;
 			}
-			if(!playingPiece && !hasHitBottom) {
-				hasHitBottom = true;
-				playingPiece = true;
-			}
+
 		}
 		// Add placed points
-		for (Point point : pointLocations) {
+		for (Point point : pieceLocations) {
 			if (point != null) {
 				placedPoints.add(point);
 			}
 		}
+
 		// Check each row for whether or not it can be cleared, and clear it.
+		ArrayList<Integer> fullRows = getRowsToClear();
+		// Must go from bottom to top
+		Collections.reverse(fullRows);
+		if (!fullRows.isEmpty()) {
+			for (int row : fullRows) {
+				clearRow(row);
+			}
+		}
 	}
 
 	/**
@@ -142,7 +154,7 @@ public class Board extends JPanel {
 					pointLocations[index] = points[row][col];
 					point.setNotUsing();
 					index++;
-					if ((row >= this.rows - 1) || points[row + 1][col].getInUse()) {
+					if ((row >= ROWS - 1) || points[row + 1][col].getInUse()) {
 						cont = false;
 					}
 				} catch (ArrayIndexOutOfBoundsException e) {
@@ -170,13 +182,18 @@ public class Board extends JPanel {
 		boolean doIt = true;
 		for (Point point : pointLocations) {
 			if (point != null) {
-				if (pointLocations[index].getYCoordinate() + amt >= this.cols
+				if (pointLocations[index].getYCoordinate() + amt >= COLS
 						|| pointLocations[index].getYCoordinate() + amt < 0) {
 					doIt = false;
 				}
-				if (placedPoints
-						.contains((points[pointLocations[index].getXCoordinate()][pointLocations[index].getYCoordinate()
-								+ amt]))) {
+				try {
+					if (placedPoints.contains(
+							(points[pointLocations[index].getXCoordinate()][pointLocations[index].getYCoordinate()
+									+ amt]))) {
+						doIt = false;
+					}
+				} catch (ArrayIndexOutOfBoundsException ne) {
+					// ArrayIndexOutOfBoundsException from going out of the bounds
 					doIt = false;
 				}
 				index++;
@@ -234,7 +251,7 @@ public class Board extends JPanel {
 		int ct = 0;
 		for (int i = 0; i < newShape.length; i++) {
 			for (int j = 0; j < newShape[i].length; j++) {
-				if (newShape[i][j] == 1 && currentRow + newShape.length > this.rows + 1) {
+				if (newShape[i][j] == 1 && currentRow + newShape.length > ROWS + 1) {
 					return pointLocations;
 				}
 			}
@@ -249,7 +266,7 @@ public class Board extends JPanel {
 		for (int i = 0; i < newShape.length; i++) {
 			for (int j = 0; j < newShape[i].length; j++) {
 				if (newShape[i][j] == 1) {
-					while (j + horzShift >= this.cols) {
+					while (j + horzShift >= COLS) {
 						shiftSide(newPoints, p, -1);
 						horzShift -= 1;
 					}
@@ -266,6 +283,47 @@ public class Board extends JPanel {
 		}
 		needsTurn = false;
 		return newPoints;
+	}
+
+	private ArrayList<Integer> getRowsToClear() {
+		ArrayList<Integer> fullRows = new ArrayList<>(0);
+		for (int i = 0; i < ROWS; i++) {
+			boolean rowFull = true;
+			for (int j = 0; j < COLS; j++) {
+				if (!placedPoints.contains(points[i][j])) {
+					rowFull = false;
+				}
+			}
+			if (rowFull) {
+				fullRows.add(i);
+			}
+		}
+		return fullRows;
+	}
+
+	private void clearRow(int row) {
+		// Clear the row
+		for (int j = 0; j < COLS; j++) {
+			placedPoints.remove(points[row][j]);
+			points[row][j].setNotUsing();
+		}
+		
+		// Shift rows down
+		long dropTimer = System.currentTimeMillis();
+		int TIME_GIVEN = 100;
+		int onRow = row;
+		while (onRow > 0) {
+			if(System.currentTimeMillis() > dropTimer + TIME_GIVEN) {
+				for (int j = 0; j < COLS; j++) {
+					points[row+1][j].setInUse(points[row][j].getColor());
+					points[row][j].setNotUsing();
+					placedPoints.remove(points[row][j]);
+					placedPoints.add(points[row + 1][j]);
+				}
+				onRow--;
+				dropTimer = System.currentTimeMillis();
+			}
+		}
 	}
 
 	public int getHorzShift() {
@@ -293,19 +351,11 @@ public class Board extends JPanel {
 	}
 
 	public int getCols() {
-		return cols;
-	}
-
-	public void setCols(int cols) {
-		this.cols = cols;
+		return COLS;
 	}
 
 	public int getRows() {
-		return rows;
-	}
-
-	public void setRows(int rows) {
-		this.rows = rows;
+		return ROWS;
 	}
 
 }

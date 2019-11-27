@@ -22,6 +22,7 @@ public class TetrisApp {
 		Random random = new Random();
 		while (true) {
 			int next = random.nextInt(7);
+			System.out.println(next);
 			switch (next) {
 			case 0:
 				board.placePiece(new JPiece());
@@ -47,7 +48,6 @@ public class TetrisApp {
 			default:
 				System.out.println("ERROR, Invalid piece option: " + next);
 			}
-			board.placePiece(new ZPiece());
 		}
 	}
 }
