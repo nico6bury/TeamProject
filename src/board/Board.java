@@ -76,7 +76,7 @@ public class Board extends JPanel {
 		int tempVertShift = vertShift;
 		int onRow = 0;
 
-		// Place the piece initially, all pieces start out horizontal, so 2 height
+		// Place the piece initially, all pieces start out horizontal, so 2 height of
 		while (onRow < 2) {
 			// Place all parts of the piece that are on the current row
 			for (int j = 0; j < p.getShape()[onRow].length; j++) {
@@ -89,38 +89,41 @@ public class Board extends JPanel {
 			// Shift down a row if not on row 2
 			onRow++;
 			if (onRow < 2) {
-				playingPiece = shiftDown(pieceLocations, p);
+				playingPiece = shiftDown(p);
 			}
 		}
 
+		// Piece game loop
 		while (playingPiece) {
 			// Check if the piece needs to shift to the side.
 			if (tempHorzShift != horzShift) {
-				shiftSide(pieceLocations, p, horzShift - tempHorzShift);
+				shiftSide(p, horzShift - tempHorzShift);
 				tempHorzShift = horzShift;
 			}
 			// Check if the piece needs to rotate.
 			if (needsTurn) {
-				pieceLocations = rotate(pieceLocations, p, onRow);
+				rotate(p, onRow);
 				needsTurn = false;
 				tempHorzShift = horzShift;
 			}
 			// Check if the piece needs to move down.
 			if (dropTimer + TIME_GIVEN <= System.currentTimeMillis() || tempVertShift != vertShift) {
 				// Shift already placed parts
-				playingPiece = shiftDown(pieceLocations, p);
+				playingPiece = shiftDown(p);
 				onRow++;
 				dropTimer = System.currentTimeMillis();
 				tempVertShift = vertShift;
 			}
 		}
 
+		// Set the points to no longer being in play.
 		for (Point point : pieceLocations) {
 			if (point != null) {
 				point.setInPlay(false);
 			}
 		}
 
+		// Check for rows that need to be cleared out.
 		int rowCheck = ROWS - 1;
 		while (rowCheck > 0) {
 			if (isRowFull(rowCheck)) {
@@ -134,19 +137,18 @@ public class Board extends JPanel {
 	/**
 	 * Shifts the piece down 1 section.
 	 * 
-	 * @param pointLocations A Point[] of each point in the piece.
-	 * @param p              The piece that is currently in play.
+	 * @param p The piece that is currently in play.
 	 * @return continue - whether or not the piece will continue to be in play.
 	 */
-	private boolean shiftDown(Point[] pointLocations, GenericPiece p) {
+	private boolean shiftDown(GenericPiece p) {
 		int index = 0;
 		boolean cont = true;
-		for (Point point : pointLocations) {
+		for (Point point : pieceLocations) {
 			if (point != null) {
 				try {
-					int row = pointLocations[index].getRow() + 1;
-					int col = pointLocations[index].getCol();
-					pointLocations[index] = points[row][col];
+					int row = pieceLocations[index].getRow() + 1;
+					int col = pieceLocations[index].getCol();
+					pieceLocations[index] = points[row][col];
 					point.setNotUsing();
 					index++;
 					if ((row >= ROWS - 1) || points[row + 1][col].isInUse()) {
@@ -157,7 +159,7 @@ public class Board extends JPanel {
 				}
 			}
 		}
-		for (Point point : pointLocations) {
+		for (Point point : pieceLocations) {
 			if (point != null) {
 				point.setInUse(p);
 			}
@@ -168,11 +170,10 @@ public class Board extends JPanel {
 	/**
 	 * Shifts the piece that is currently in play to the left or the right.
 	 * 
-	 * @param pieceLocations A Point[] of each point in the piece.
-	 * @param p              The piece that is currently in play.
-	 * @param amt            The amount to shift the piece.
+	 * @param p   The piece that is currently in play.
+	 * @param amt The amount to shift the piece.
 	 */
-	private void shiftSide(Point[] pieceLocations, GenericPiece p, int amt) {
+	private void shiftSide(GenericPiece p, int amt) {
 		int index = 0; // Index of looping through the pointLocations
 		boolean doIt = true;
 		for (Point point : pieceLocations) {
@@ -184,7 +185,7 @@ public class Board extends JPanel {
 						doIt = false;
 					}
 				} catch (ArrayIndexOutOfBoundsException ne) {
-					// ArrayIndexOutOfBoundsException from going out of the bounds
+					// ArrayIndexOutOfBoundsException from going out of the board
 					doIt = false;
 				}
 				index++;
@@ -210,16 +211,14 @@ public class Board extends JPanel {
 	}
 
 	/**
-	 * Rotates the piece to the next rotation option.
+	 * Rotates the piece to the next rotation state.
 	 * 
-	 * @param pointLocations The locations of the current points of the piece.
-	 * @param p              The piece to rotate.
-	 * @param currentRow     The current row that the piece is on.
-	 * @return A Point[] of the points that the piece is using.
+	 * @param p          The piece to rotate
+	 * @param currentRow The current row that the piece is on.
+	 * @return
 	 */
-	private Point[] rotate(Point[] pointLocations, GenericPiece p, int currentRow) {
+	private boolean rotate(GenericPiece p, int currentRow) {
 		int ind = 0;
-		Point[] newPoints = new Point[10];
 		if (p instanceof JPiece) {
 			ind = (p.getCurrentShapeIndex() == 3 ? 0 : p.getCurrentShapeIndex() + 1);
 		} else if (p instanceof LPiece) {
@@ -227,7 +226,7 @@ public class Board extends JPanel {
 		} else if (p instanceof SPiece) {
 			ind = (p.getCurrentShapeIndex() == 1 ? 0 : 1);
 		} else if (p instanceof SquarePiece) {
-			return pointLocations;
+			return false;
 		} else if (p instanceof StickPiece) {
 			ind = (p.getCurrentShapeIndex() == 1 ? 0 : 1);
 		} else if (p instanceof TPiece) {
@@ -242,45 +241,57 @@ public class Board extends JPanel {
 		for (int i = 0; i < newShape.length; i++) {
 			for (int j = 0; j < newShape[i].length; j++) {
 				if (newShape[i][j] == 1 && currentRow + newShape.length > ROWS + 1) {
-					return pointLocations;
+					return false;
 				}
 			}
 		}
 
-		p.setCurrentShape(ind);
-		for (Point rp : pointLocations) {
+		for (Point rp : pieceLocations) {
 			if (rp != null) {
 				rp.setNotUsing();
 			}
 		}
 
+		pieceLocations = new Point[10];
+		p.setCurrentShape(ind);
+
+		// Adjust up and down shifts for the rotations
 		int ct = 0;
 		for (int i = 0; i < newShape.length; i++) {
 			for (int j = 0; j < newShape[i].length; j++) {
 				if (newShape[i][j] == 1) {
 					while (j + horzShift >= COLS) {
-						shiftSide(newPoints, p, -1);
 						horzShift--;
 					}
 					while (j + horzShift < 0) {
-						shiftSide(newPoints, p, 1);
 						horzShift++;
 					}
 					while (currentRow - newShape.length < 0) {
-						shiftDown(newPoints, p);
 						currentRow++;
 					}
+				}
+			}
+		}
+		// Place the new piece.
+		for (int i = 0; i < newShape.length; i++) {
+			for (int j = 0; j < newShape[i].length; j++) {
+				if (newShape[i][j] == 1) {
 					points[currentRow - newShape.length][j + horzShift].setColor(p.getColor());
-					newPoints[ct] = points[currentRow - newShape.length][j + horzShift];
+					pieceLocations[ct] = points[currentRow - newShape.length][j + horzShift];
 					ct++;
 				}
 			}
-			shiftDown(newPoints, p);
+			shiftDown(p);
 		}
-		needsTurn = false;
-		return newPoints;
+		return true;
 	}
 
+	/**
+	 * Checks whether or not the row is full and needs to be cleared.
+	 * 
+	 * @param row The row the check if is full.
+	 * @return If the row is full.
+	 */
 	private boolean isRowFull(int row) {
 		for (int j = 0; j < COLS; j++) {
 			if (!points[row][j].isInUse()) {
@@ -290,8 +301,12 @@ public class Board extends JPanel {
 		return true;
 	}
 
+	/**
+	 * Clears out a full row and shifts the rows above it down.
+	 * 
+	 * @param row The row to clear out.
+	 */
 	private void clearRow(int row) {
-		// Clear the row
 		for (int j = 0; j < COLS; j++) {
 			points[row][j].setNotUsing();
 		}

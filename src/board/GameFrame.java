@@ -49,7 +49,7 @@ public class GameFrame extends JFrame implements KeyListener {
 			}
 		}
 
-		// 39 is the left arrow that moves the piece left
+		// 39 is the left arrow that moves the piece right
 		if (e.getKeyCode() == 39) {
 			// Get the points for the piece and find the furthest right spot to check
 			// movable
