@@ -22,7 +22,6 @@ public class TetrisApp {
 		Random random = new Random();
 		while (true) {
 			int next = random.nextInt(7);
-			System.out.println(next);
 			switch (next) {
 			case 0:
 				board.placePiece(new JPiece());

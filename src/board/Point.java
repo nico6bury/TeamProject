@@ -12,15 +12,17 @@ public class Point extends JPanel {
 	 * Generated Serial Version ID
 	 */
 	private static final long serialVersionUID = -1690345195968992411L;
-	private int x;
-	private int y;
+	private int row;
+	private int col;
 	private boolean inUse;
+	private boolean inPlay;
 
-	public Point(int x, int y) {
+	public Point(int row, int col) {
 		// Create looks
-		inUse = false;
-		this.x = x;
-		this.y = y;
+		this.inUse = false;
+		this.inPlay = false;
+		this.row = row;
+		this.col = col;
 		this.setBackground(Color.DARK_GRAY);
 		this.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 	}
@@ -33,7 +35,7 @@ public class Point extends JPanel {
 	 *         String in the format (x,y)
 	 */
 	public String toString() {
-		return ("(" + x + "," + y + ") is the color: " + getColor());
+		return ("(" + row + "," + col + ") is the color: " + getColor());
 	}
 
 	/**
@@ -47,15 +49,15 @@ public class Point extends JPanel {
 	 *         are different in any way
 	 */
 	public boolean equals(Point p) {
-		return ((x == p.getX()) && (y == p.getY()));
+		return ((row == p.getRow()) && (col == p.getCol()));
 	}
 
-	public int getXCoordinate() {
-		return x;
+	public int getRow() {
+		return row;
 	}
 
-	public int getYCoordinate() {
-		return y;
+	public int getCol() {
+		return col;
 	}
 
 	public void setColor(Color c) {
@@ -67,9 +69,8 @@ public class Point extends JPanel {
 	}
 
 	public void setInUse(GenericPiece p) {
-		this.setColor(p.getColor());
-		this.inUse = true;
-
+		this.setInUse(p.getColor());
+		this.setInPlay(true);
 	}
 
 	public void setInUse(Color c) {
@@ -80,9 +81,18 @@ public class Point extends JPanel {
 	public void setNotUsing() {
 		this.setColor(Color.DARK_GRAY);
 		this.inUse = false;
+		this.inPlay = false;
 	}
 
-	public boolean getInUse() {
+	public boolean isInUse() {
 		return this.inUse;
+	}
+
+	public void setInPlay(boolean inPlay) {
+		this.inPlay = inPlay;
+	}
+
+	public boolean isInPlay() {
+		return this.inPlay;
 	}
 }

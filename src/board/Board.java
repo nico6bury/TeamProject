@@ -1,8 +1,6 @@
 package board;
 
 import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.Collections;
 
 import javax.swing.JPanel;
 
@@ -36,7 +34,7 @@ public class Board extends JPanel {
 	private int vertShift = 0;
 	private boolean needsTurn = false;
 	private Point[][] points;
-	private ArrayList<Point> placedPoints;
+	private Point[] pieceLocations;
 
 	/**
 	 * Creates the board for the game.
@@ -50,7 +48,6 @@ public class Board extends JPanel {
 		this.setLayout(layout);
 
 		// Generate Points on the board
-		placedPoints = new ArrayList<>();
 		points = new Point[ROWS][COLS];
 		for (int i = 0; i < ROWS; i++) {
 			for (int k = 0; k < COLS; k++) {
@@ -68,7 +65,7 @@ public class Board extends JPanel {
 	 * @param p The piece to place.
 	 */
 	public void placePiece(GenericPiece p) {
-		Point[] pieceLocations = new Point[10];
+		pieceLocations = new Point[10];
 		int placeCounter = 0;
 		boolean playingPiece = true;
 		long dropTimer = System.currentTimeMillis();
@@ -116,22 +113,14 @@ public class Board extends JPanel {
 				dropTimer = System.currentTimeMillis();
 				tempVertShift = vertShift;
 			}
-
-		}
-		// Add placed points
-		for (Point point : pieceLocations) {
-			if (point != null) {
-				placedPoints.add(point);
-			}
 		}
 
-		// Check each row for whether or not it can be cleared, and clear it.
-		ArrayList<Integer> fullRows = getRowsToClear();
-		// Must go from bottom to top
-		Collections.reverse(fullRows);
-		if (!fullRows.isEmpty()) {
-			for (int row : fullRows) {
-				clearRow(row);
+		int rowCheck = ROWS - 1;
+		while (rowCheck > 0) {
+			if (isRowFull(rowCheck)) {
+				clearRow(rowCheck);
+			} else {
+				rowCheck--;
 			}
 		}
 	}
@@ -149,12 +138,12 @@ public class Board extends JPanel {
 		for (Point point : pointLocations) {
 			if (point != null) {
 				try {
-					int row = pointLocations[index].getXCoordinate() + 1;
-					int col = pointLocations[index].getYCoordinate();
+					int row = pointLocations[index].getRow() + 1;
+					int col = pointLocations[index].getCol();
 					pointLocations[index] = points[row][col];
 					point.setNotUsing();
 					index++;
-					if ((row >= ROWS - 1) || points[row + 1][col].getInUse()) {
+					if ((row >= ROWS - 1) || points[row + 1][col].isInUse()) {
 						cont = false;
 					}
 				} catch (ArrayIndexOutOfBoundsException e) {
@@ -173,23 +162,19 @@ public class Board extends JPanel {
 	/**
 	 * Shifts the piece that is currently in play to the left or the right.
 	 * 
-	 * @param pointLocations A Point[] of each point in the piece.
+	 * @param pieceLocations A Point[] of each point in the piece.
 	 * @param p              The piece that is currently in play.
 	 * @param amt            The amount to shift the piece.
 	 */
-	private void shiftSide(Point[] pointLocations, GenericPiece p, int amt) {
+	private void shiftSide(Point[] pieceLocations, GenericPiece p, int amt) {
 		int index = 0; // Index of looping through the pointLocations
 		boolean doIt = true;
-		for (Point point : pointLocations) {
+		for (Point point : pieceLocations) {
 			if (point != null) {
-				if (pointLocations[index].getYCoordinate() + amt >= COLS
-						|| pointLocations[index].getYCoordinate() + amt < 0) {
-					doIt = false;
-				}
 				try {
-					if (placedPoints.contains(
-							(points[pointLocations[index].getXCoordinate()][pointLocations[index].getYCoordinate()
-									+ amt]))) {
+					if (points[pieceLocations[index].getRow()][pieceLocations[index].getCol() + amt].isInUse()
+							&& !points[pieceLocations[index].getRow()][pieceLocations[index].getCol() + amt]
+									.isInPlay()) {
 						doIt = false;
 					}
 				} catch (ArrayIndexOutOfBoundsException ne) {
@@ -201,16 +186,16 @@ public class Board extends JPanel {
 		}
 		if (doIt) {
 			index = 0;
-			for (Point point : pointLocations) {
+			for (Point point : pieceLocations) {
 				if (point != null) {
-					int row = pointLocations[index].getXCoordinate();
-					int col = pointLocations[index].getYCoordinate() + amt;
-					pointLocations[index] = points[row][col];
+					int row = pieceLocations[index].getRow();
+					int col = pieceLocations[index].getCol() + amt;
+					pieceLocations[index] = points[row][col];
 					point.setNotUsing();
 					index++;
 				}
 			}
-			for (Point point : pointLocations) {
+			for (Point point : pieceLocations) {
 				if (point != null) {
 					point.setInUse(p);
 				}
@@ -248,7 +233,6 @@ public class Board extends JPanel {
 			System.exit(0);
 		}
 		int[][] newShape = p.getShapeOptions().get(ind);
-		int ct = 0;
 		for (int i = 0; i < newShape.length; i++) {
 			for (int j = 0; j < newShape[i].length; j++) {
 				if (newShape[i][j] == 1 && currentRow + newShape.length > ROWS + 1) {
@@ -263,12 +247,18 @@ public class Board extends JPanel {
 				rp.setNotUsing();
 			}
 		}
+
+		int ct = 0;
 		for (int i = 0; i < newShape.length; i++) {
 			for (int j = 0; j < newShape[i].length; j++) {
 				if (newShape[i][j] == 1) {
 					while (j + horzShift >= COLS) {
 						shiftSide(newPoints, p, -1);
-						horzShift -= 1;
+						horzShift--;
+					}
+					while (j + horzShift < 0) {
+						shiftSide(newPoints, p, 1);
+						horzShift++;
 					}
 					while (currentRow - newShape.length < 0) {
 						shiftDown(newPoints, p);
@@ -285,40 +275,44 @@ public class Board extends JPanel {
 		return newPoints;
 	}
 
-	private ArrayList<Integer> getRowsToClear() {
-		ArrayList<Integer> fullRows = new ArrayList<>(0);
-		for (int i = 0; i < ROWS; i++) {
-			boolean rowFull = true;
-			for (int j = 0; j < COLS; j++) {
-				if (!placedPoints.contains(points[i][j])) {
-					rowFull = false;
-				}
-			}
-			if (rowFull) {
-				fullRows.add(i);
+	private boolean isRowFull(int row) {
+		for (int j = 0; j < COLS; j++) {
+			if (!points[row][j].isInUse()) {
+				return false;
 			}
 		}
-		return fullRows;
+		return true;
 	}
 
 	private void clearRow(int row) {
 		// Clear the row
 		for (int j = 0; j < COLS; j++) {
-			placedPoints.remove(points[row][j]);
 			points[row][j].setNotUsing();
+		}
+		
+		int highestRow = -1;
+		for(int i = row; i > 0; i--) {
+			for (int j = 0; j < COLS; j++) {
+				if (points[i][j].isInUse()) {
+					highestRow = i;
+					break;
+				}
+			}
 		}
 		
 		// Shift rows down
 		long dropTimer = System.currentTimeMillis();
-		int TIME_GIVEN = 100;
+		int TIME_GIVEN = 200;
 		int onRow = row;
-		while (onRow > 0) {
-			if(System.currentTimeMillis() > dropTimer + TIME_GIVEN) {
+
+		while (onRow > highestRow) {
+			if (System.currentTimeMillis() > dropTimer + TIME_GIVEN) {
 				for (int j = 0; j < COLS; j++) {
-					points[row+1][j].setInUse(points[row][j].getColor());
-					points[row][j].setNotUsing();
-					placedPoints.remove(points[row][j]);
-					placedPoints.add(points[row + 1][j]);
+					// Shift points from 1 above to down and then remove the row above
+					if (points[onRow - 1][j].isInUse()) {
+						points[onRow][j].setInUse(points[onRow - 1][j].getColor());
+						points[onRow - 1][j].setNotUsing();
+					}
 				}
 				onRow--;
 				dropTimer = System.currentTimeMillis();
@@ -358,4 +352,7 @@ public class Board extends JPanel {
 		return ROWS;
 	}
 
+	public Point[] getPiecePoints() {
+		return pieceLocations;
+	}
 }
