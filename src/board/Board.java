@@ -115,6 +115,12 @@ public class Board extends JPanel {
 			}
 		}
 
+		for (Point point : pieceLocations) {
+			if (point != null) {
+				point.setInPlay(false);
+			}
+		}
+
 		int rowCheck = ROWS - 1;
 		while (rowCheck > 0) {
 			if (isRowFull(rowCheck)) {
@@ -289,9 +295,9 @@ public class Board extends JPanel {
 		for (int j = 0; j < COLS; j++) {
 			points[row][j].setNotUsing();
 		}
-		
+
 		int highestRow = -1;
-		for(int i = row; i > 0; i--) {
+		for (int i = row; i > 0; i--) {
 			for (int j = 0; j < COLS; j++) {
 				if (points[i][j].isInUse()) {
 					highestRow = i;
@@ -299,7 +305,7 @@ public class Board extends JPanel {
 				}
 			}
 		}
-		
+
 		// Shift rows down
 		long dropTimer = System.currentTimeMillis();
 		int TIME_GIVEN = 200;
