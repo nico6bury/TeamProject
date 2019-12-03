@@ -1,4 +1,5 @@
-/Point.class
 /bin/
 *.class
 .vscode
+/compiledFiles/
+*.class
