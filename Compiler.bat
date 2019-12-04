@@ -10,9 +10,7 @@ javac -d compiledFiles\ "src\board\Menu.java" -classpath "src"
 javac -d compiledFiles\ "src\board\Point.java" -classpath "src"
 javac -d compiledFiles\ "src\board\ScorePanel.java" -classpath "src"
 
-javac -d compiledFiles\ "src\data\Score.java" -classpath "src"
-javac -d compiledFiles\ "src\data\DataIO.java" -classpath "src"
-javac -d compiledFiles\ "src\data\Options.java" -classpath "src"
+javac -d compiledFiles\ "src\data\Score.java" -classpath "src"a
 
 javac -d compiledFiles\ "src\game\TetrisApp.java" -classpath "src"
 
