@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 
 import javax.swing.JPanel;
 
+import game.TetrisApp;
 import pieces.GenericPiece;
 import pieces.JPiece;
 import pieces.LPiece;
@@ -89,14 +90,18 @@ public class Board extends JPanel {
 			// Shift down a row if not on row 2
 			onRow++;
 			if (onRow < 2) {
-				playingPiece = shiftDown(p);
+				if(canShiftDown(p)) {
+					playingPiece = shiftDown(p);
+				} else {
+					TetrisApp.stopGame();
+				}
 			}
 		}
 
 		// Piece game loop
 		while (playingPiece) {
 			// Check for fast dropping
-			if (GameFrame.getFastDrop() && timeGiven != 100) {
+			if (TetrisApp.getGameFrame().getFastDrop() && timeGiven != 100) {
 				timeGiven = 100;
 			} else {
 				timeGiven = 500;
@@ -120,9 +125,10 @@ public class Board extends JPanel {
 				onRow++;
 				dropTimer = System.currentTimeMillis();
 				tempVertShift = vertShift;
-				if(GameFrame.getFastDrop()) {
-					GameFrame.getScore().updateUserScore(5);
+				if(TetrisApp.getGameFrame().getFastDrop()) {
+					TetrisApp.getScore().updateUserScore(5);
 				}
+				System.out.println("Current Score: " + TetrisApp.getScore().getUserScore());
 			}
 		}
 
@@ -377,9 +383,9 @@ public class Board extends JPanel {
 			}
 		}
 		//Give the user points for clearing the row
-		GameFrame.getScore().updateUserScore(250);
+		TetrisApp.getScore().updateUserScore(250);
 	}
-
+	
 	public int getHorzShift() {
 		return horzShift;
 	}

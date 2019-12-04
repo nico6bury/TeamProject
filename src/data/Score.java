@@ -1,9 +1,10 @@
 package data;
 /** Score.java
- * Created by Nicholas Sixbury
  * The purpose of this class is to hold information for both the user's
  * current score as well as the high scores, which are stored in a text
  * file.
+ * 
+ * @author Nicholas Sixbury
  */
 
 import java.util.ArrayList;
@@ -27,11 +28,11 @@ public class Score {
 			scoresFile = new File("highScores.txt");
 			if (!scoresFile.exists()) {
 				scoresFile.createNewFile();
-				userScore = 0;
-				highScore = new ArrayList<>(0);
-				names = new ArrayList<>(0);
-				readFile();
 			}
+			userScore = 0;
+			highScore = new ArrayList<>(0);
+			names = new ArrayList<>(0);
+			readFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -58,10 +59,13 @@ public class Score {
 	 * and highScore to a File created on object creation. It accomplishes this by
 	 * printing the toString of this class.
 	 */
-	public void writeFile() throws FileNotFoundException {
-		PrintWriter pw = new PrintWriter(scoresFile);
-		pw.println(toString());
-		pw.close();
+	public void writeFile() {
+		try (PrintWriter pw = new PrintWriter(scoresFile);) {
+			pw.println(toString());
+			pw.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}// end writeFile
 
 	/**
@@ -129,8 +133,8 @@ public class Score {
 	 * 
 	 * @return returns true if the score was updated and false otherwise
 	 */
-	public boolean updateHighScore() throws FileNotFoundException {
-		if (highScore.size() < 3) {
+	public boolean updateHighScore() {
+		if (highScore.size() < SCORE_TO_KEEP) {
 			boolean flag = true;
 			for (int i = 0; i < highScore.size(); i++) {
 				if (userScore > highScore.get(i)) {
@@ -147,7 +151,7 @@ public class Score {
 			writeFile();
 			return true;
 		} else if (userScore > highScore.get(highScore.size() - 1)) {
-			// tests if userScore is gerater than lowest high score
+			// tests if userScore is greater than lowest high score
 			for (int i = 0; i < highScore.size(); i++) {
 				if (userScore > highScore.get(i)) {
 					highScore.add(i, userScore);

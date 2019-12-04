@@ -12,10 +12,10 @@ public class GameFrame extends JFrame implements KeyListener {
 	 * Generated Serial Version ID
 	 */
 	private static final long serialVersionUID = 8176877174361042425L;
-	private static Board board;
-	private static Score score;
-	private static ScorePanel scorePanel;
-	private static boolean fastDrop = false;
+	private Board board;
+	private Score score;
+	private ScorePanel scorePanel;
+	private boolean fastDrop = false;
 
 	public GameFrame() {
 		setUndecorated(true);
@@ -72,15 +72,11 @@ public class GameFrame extends JFrame implements KeyListener {
 	public void keyTyped(KeyEvent e) {
 	}
 
-	public static boolean getFastDrop() {
+	public boolean getFastDrop() {
 		return fastDrop;
 	}
 
-	public static Score getScore() {
+	public Score getScore() {
 		return score;
-	}
-
-	public static void setScore(Score score) {
-		GameFrame.score = score;
 	}
 }

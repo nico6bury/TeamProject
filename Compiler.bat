@@ -6,7 +6,6 @@ if not exist %CD%\compiledFiles\data\ mkdir %CD%\compiledFiles\data\
 
 javac -d compiledFiles\ "src\board\Board.java" -classpath "src"
 javac -d compiledFiles\ "src\board\GameFrame.java" -classpath "src"
-javac -d compiledFiles\ "src\board\Menu.java" -classpath "src"
 javac -d compiledFiles\ "src\board\Point.java" -classpath "src"
 javac -d compiledFiles\ "src\board\ScorePanel.java" -classpath "src"
 
