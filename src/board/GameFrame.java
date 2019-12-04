@@ -22,7 +22,7 @@ public class GameFrame extends JFrame implements KeyListener {
 		addKeyListener(this);
 		this.board = new Board();
 		this.add(board);
-		scorePanel = new ScorePanel();
+		ScorePanel scorePanel = new ScorePanel();
 		this.add(scorePanel);
 	}
 
