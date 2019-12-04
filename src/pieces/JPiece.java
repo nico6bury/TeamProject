@@ -3,14 +3,14 @@ package pieces;
 import java.awt.Color;
 
 /**
- * LPiece is a representation of the tetris piece commonly referred to as a "L
+ * JPiece is a representation of the tetris piece commonly referred to as a "J
  * piece"
  * 
  * @author Brian Edits to original: Stephanie
  */
 public class JPiece extends GenericPiece {
 	/**
-	 * Creates a LPiece object
+	 * Creates a JPiece object
 	 */
 	public JPiece() {
 		addShape(new int[][] { { 1, 0, 0 }, { 1, 1, 1 }, { 0, 0, 0 } });
