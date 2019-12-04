@@ -141,30 +141,47 @@ public class Board extends JPanel {
 	 * @return continue - whether or not the piece will continue to be in play.
 	 */
 	private boolean shiftDown(GenericPiece p) {
-		int index = 0;
-		boolean cont = true;
-		for (Point point : pieceLocations) {
-			if (point != null) {
-				try {
-					int row = pieceLocations[index].getRow() + 1;
-					int col = pieceLocations[index].getCol();
-					pieceLocations[index] = points[row][col];
-					point.setNotUsing();
-					index++;
-					if ((row >= ROWS - 1) || points[row + 1][col].isInUse()) {
-						cont = false;
-					}
-				} catch (ArrayIndexOutOfBoundsException e) {
-					cont = false;
+		boolean cont = canShiftDown(p);
+		if (cont) {
+			for (int i = 0; i < pieceLocations.length; i++) {
+				if (pieceLocations[i] != null) {
+					pieceLocations[i].setNotUsing();
+					int row = pieceLocations[i].getRow() + 1;
+					int col = pieceLocations[i].getCol();
+					pieceLocations[i] = points[row][col];
+				}
+			}
+			for (Point point : pieceLocations) {
+				if (point != null) {
+					point.setInUse(p);
 				}
 			}
 		}
-		for (Point point : pieceLocations) {
-			if (point != null) {
-				point.setInUse(p);
+		return cont;
+	}
+
+	/**
+	 * Checks if the piece is able to be shifted down based on if it is too far down
+	 * or going to collide with a piece below it.
+	 * 
+	 * @param p The piece in play
+	 * @return true if the piece can be shifted down.
+	 */
+	private boolean canShiftDown(GenericPiece p) {
+		for (int i = 0; i < pieceLocations.length; i++) {
+			if (pieceLocations[i] != null) {
+				try {
+					int row = pieceLocations[i].getRow() + 1;
+					int col = pieceLocations[i].getCol();
+					if ((row >= ROWS) || (points[row][col].isInUse() && !points[row][col].isInPlay())) {
+						return false;
+					}
+				} catch (ArrayIndexOutOfBoundsException e) {
+					return false;
+				}
 			}
 		}
-		return cont;
+		return true;
 	}
 
 	/**
