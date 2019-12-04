@@ -3,3 +3,4 @@
 .vscode
 /compiledFiles/
 *.class
+highScores.txt

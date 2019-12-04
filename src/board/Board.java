@@ -120,6 +120,9 @@ public class Board extends JPanel {
 				onRow++;
 				dropTimer = System.currentTimeMillis();
 				tempVertShift = vertShift;
+				if(GameFrame.getFastDrop()) {
+					GameFrame.getScore().updateUserScore(5);
+				}
 			}
 		}
 
@@ -357,7 +360,7 @@ public class Board extends JPanel {
 
 		// Shift rows down
 		long dropTimer = System.currentTimeMillis();
-		int TIME_GIVEN = 200;
+		int TIME_GIVEN = 100;
 		int onRow = row;
 
 		while (onRow > highestRow) {
@@ -373,6 +376,8 @@ public class Board extends JPanel {
 				dropTimer = System.currentTimeMillis();
 			}
 		}
+		//Give the user points for clearing the row
+		GameFrame.getScore().updateUserScore(250);
 	}
 
 	public int getHorzShift() {

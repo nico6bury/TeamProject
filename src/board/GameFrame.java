@@ -5,12 +5,16 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
+import data.Score;
+
 public class GameFrame extends JFrame implements KeyListener {
 	/**
 	 * Generated Serial Version ID
 	 */
 	private static final long serialVersionUID = 8176877174361042425L;
 	private static Board board;
+	private static Score score;
+	private static ScorePanel scorePanel;
 	private static boolean fastDrop = false;
 
 	public GameFrame() {
@@ -22,8 +26,9 @@ public class GameFrame extends JFrame implements KeyListener {
 		setTitle("CIS 200 Tetris App");
 		addKeyListener(this);
 		board = new Board();
+		score = new Score();
 		this.add(board);
-		ScorePanel scorePanel = new ScorePanel();
+		scorePanel = new ScorePanel();
 		this.add(scorePanel);
 	}
 
@@ -69,5 +74,13 @@ public class GameFrame extends JFrame implements KeyListener {
 
 	public static boolean getFastDrop() {
 		return fastDrop;
+	}
+
+	public static Score getScore() {
+		return score;
+	}
+
+	public static void setScore(Score score) {
+		GameFrame.score = score;
 	}
 }
