@@ -69,7 +69,7 @@ public class Board extends JPanel {
 		int placeCounter = 0;
 		boolean playingPiece = true;
 		long dropTimer = System.currentTimeMillis();
-		int TIME_GIVEN = 500;
+		int timeGiven = 500;
 		horzShift = ((COLS - p.getShape()[0].length) / 2) + 1;
 		vertShift = 0;
 		int tempHorzShift = horzShift;
@@ -95,6 +95,13 @@ public class Board extends JPanel {
 
 		// Piece game loop
 		while (playingPiece) {
+			// Check for fast dropping
+			if (GameFrame.getFastDrop() && timeGiven != 100) {
+				timeGiven = 100;
+			} else {
+				timeGiven = 500;
+			}
+
 			// Check if the piece needs to shift to the side.
 			if (tempHorzShift != horzShift) {
 				shiftSide(p, horzShift - tempHorzShift);
@@ -107,7 +114,7 @@ public class Board extends JPanel {
 				tempHorzShift = horzShift;
 			}
 			// Check if the piece needs to move down.
-			if (dropTimer + TIME_GIVEN <= System.currentTimeMillis() || tempVertShift != vertShift) {
+			if (dropTimer + timeGiven <= System.currentTimeMillis() || tempVertShift != vertShift) {
 				// Shift already placed parts
 				playingPiece = shiftDown(p);
 				onRow++;
@@ -290,12 +297,12 @@ public class Board extends JPanel {
 			}
 		}
 
+		//Clear out old piece locations
 		for (Point rp : pieceLocations) {
 			if (rp != null) {
 				rp.setNotUsing();
 			}
 		}
-
 		pieceLocations = new Point[10];
 		p.setCurrentShape(ind);
 
@@ -372,8 +379,28 @@ public class Board extends JPanel {
 		return horzShift;
 	}
 
-	public void setHorzShift(int horzShift) {
-		this.horzShift = horzShift;
+	public void addHorzShift(int shiftAmt) {
+		if (shiftAmt > 0) {
+			int furthestRight = -1;
+			for (Point p : pieceLocations) {
+				if (p != null) {
+					furthestRight = p.getCol() > furthestRight ? p.getCol() : furthestRight;
+				}
+			}
+			if (furthestRight < COLS - 1) {
+				this.horzShift += shiftAmt;
+			}
+		} else {
+			int furthestLeft = COLS + 1;
+			for (Point p : pieceLocations) {
+				if (p != null) {
+					furthestLeft = p.getCol() < furthestLeft ? p.getCol() : furthestLeft;
+				}
+			}
+			if (furthestLeft > 0) {
+				this.horzShift += shiftAmt;
+			}
+		}
 	}
 
 	public int getVertShift() {
@@ -392,15 +419,7 @@ public class Board extends JPanel {
 		this.needsTurn = needsTurn;
 	}
 
-	public int getCols() {
-		return COLS;
-	}
-
 	public int getRows() {
 		return ROWS;
-	}
-
-	public Point[] getPiecePoints() {
-		return pieceLocations;
 	}
 }
