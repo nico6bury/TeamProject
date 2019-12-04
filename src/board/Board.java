@@ -251,29 +251,13 @@ public class Board extends JPanel {
 		} else if (p instanceof ZPiece) {
 			ind = (p.getCurrentShapeIndex() == 1 ? 0 : 1);
 		} else {
-			System.out.println("Tried to rotated invalid piece");
+			System.out.println("Tried to rotate an invalid piece");
 			System.exit(0);
 		}
+
+		// Sanity checks
 		int[][] newShape = p.getShapeOptions().get(ind);
-		for (int i = 0; i < newShape.length; i++) {
-			for (int j = 0; j < newShape[i].length; j++) {
-				if (newShape[i][j] == 1 && currentRow + newShape.length > ROWS + 1) {
-					return false;
-				}
-			}
-		}
-
-		for (Point rp : pieceLocations) {
-			if (rp != null) {
-				rp.setNotUsing();
-			}
-		}
-
-		pieceLocations = new Point[10];
-		p.setCurrentShape(ind);
-
-		// Adjust up and down shifts for the rotations
-		int ct = 0;
+		// Adjust left, right, and down shifts
 		for (int i = 0; i < newShape.length; i++) {
 			for (int j = 0; j < newShape[i].length; j++) {
 				if (newShape[i][j] == 1) {
@@ -289,16 +273,42 @@ public class Board extends JPanel {
 				}
 			}
 		}
+
+		for (int i = 0; i < newShape.length; i++) {
+			for (int j = 0; j < newShape[i].length; j++) {
+				// Check that the shape will fit in the board once rotated
+				if (newShape[i][j] == 1 && currentRow + newShape.length > ROWS + 1) {
+					return false;
+				}
+				// Check that the piece will not collide with placed pieces
+				if (newShape[i][j] == 1) {
+					if (points[currentRow - i][j + horzShift].isInUse()
+							&& !points[currentRow - i][j + horzShift].isInPlay()) {
+						return false;
+					}
+				}
+			}
+		}
+
+		for (Point rp : pieceLocations) {
+			if (rp != null) {
+				rp.setNotUsing();
+			}
+		}
+
+		pieceLocations = new Point[10];
+		p.setCurrentShape(ind);
+
 		// Place the new piece.
+		int ct = 0;
 		for (int i = 0; i < newShape.length; i++) {
 			for (int j = 0; j < newShape[i].length; j++) {
 				if (newShape[i][j] == 1) {
-					points[currentRow - newShape.length][j + horzShift].setColor(p.getColor());
-					pieceLocations[ct] = points[currentRow - newShape.length][j + horzShift];
+					points[currentRow - i][j + horzShift].setColor(p.getColor());
+					pieceLocations[ct] = points[currentRow - i][j + horzShift];
 					ct++;
 				}
 			}
-			shiftDown(p);
 		}
 		return true;
 	}
