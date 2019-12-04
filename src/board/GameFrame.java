@@ -15,7 +15,7 @@ public class GameFrame extends JFrame implements KeyListener {
 	public GameFrame() {
 		setUndecorated(true);
 		setLayout(null);
-		setSize(300, 600);
+		setSize(500, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
 		setTitle("CIS 200 Tetris App");
