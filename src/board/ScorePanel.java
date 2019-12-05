@@ -62,7 +62,7 @@ public class ScorePanel extends JPanel {
 		next.setForeground(Color.YELLOW);
 		this.add(next);
 
-		//create button to quit game
+//		create button to quit game
 		JButton quit = new JButton("Quit");
 		quit.setBackground(Color.BLACK);
 		quit.setForeground(Color.YELLOW);
