@@ -171,15 +171,22 @@ public class Score {
 	}// end updateHighScore
 
 	private String getUsername() {
-		String name = JOptionPane.showInputDialog(null, "What is your name?\n" + "You can use three characters.");
-		while (name.length() > 3 || name.length() < 1) {
-			if (name.length() > 3) {
-				name = JOptionPane.showInputDialog(null, "Please enter 3 characters or less.\n" + "What is your name?");
-			} // end if greater than 3 chars
-			else {
-				name = JOptionPane.showInputDialog(null, "You must enter at least something.\n" + "What is your name?");
-			} // end else name is empty
-		} // end while
-		return name.toUpperCase();
+		try {
+			String name = JOptionPane.showInputDialog(null, "What is your name?\n" + "You can use three characters.");
+			while (name.length() > 3 || name.length() < 1) {
+				if (name.length() > 3) {
+					name = JOptionPane.showInputDialog(null,
+							"Please enter 3 characters or less.\n" + "What is your name?");
+				} // end if greater than 3 chars
+				else {
+					name = JOptionPane.showInputDialog(null,
+							"You must enter at least something.\n" + "What is your name?");
+				} // end else name is empty
+			} // end while
+			return name.toUpperCase();
+		} catch (NullPointerException e) {
+			JOptionPane.showMessageDialog(null, "You MUST Enter a name!");
+			return getUsername();
+		}
 	}// end getUsername
 }// end class
