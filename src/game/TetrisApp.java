@@ -65,13 +65,18 @@ public class TetrisApp {
 	}
 
 	public static void stopGame() {
-		playingGame = false;
-		score.updateHighScore();
-		String playAgain = JOptionPane.showInputDialog("Play another round? y/n").toLowerCase();
-		if (playAgain.contains("y")) {
-			startGame();
-		} else {
-			System.exit(0);
+		try {
+			playingGame = false;
+			score.updateHighScore();
+			String playAgain = JOptionPane.showInputDialog("Play another round? y/n").toLowerCase();
+			if (playAgain.contains("y")) {
+				startGame();
+			} else {
+				System.exit(0);
+			}
+		} catch(NullPointerException ne) {
+			JOptionPane.showMessageDialog(null, "Must give a valid answer!");
+			stopGame();
 		}
 	}
 

@@ -134,6 +134,7 @@ public class Board extends JPanel {
 
 		// Set the points to no longer being in play.
 		for (Point point : pieceLocations) {
+			System.out.println(p.getColor());
 			if (point != null) {
 				point.setInPlay(false);
 			}
