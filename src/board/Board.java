@@ -71,7 +71,7 @@ public class Board extends JPanel {
 		boolean playingPiece = true;
 		long dropTimer = System.currentTimeMillis();
 		int timeGiven = 500;
-		horzShift = ((COLS - p.getShape()[0].length) / 2) + 1;
+		horzShift = ((COLS - p.getShape()[0].length) / 2);
 		vertShift = 0;
 		int tempHorzShift = horzShift;
 		int tempVertShift = vertShift;
@@ -87,14 +87,14 @@ public class Board extends JPanel {
 					placeCounter++;
 				}
 			}
+			if (!canShiftDown(p)) {
+				TetrisApp.stopGame();
+			}
+			
 			// Shift down a row if not on row 2
 			onRow++;
 			if (onRow < 2) {
-				if(canShiftDown(p)) {
-					playingPiece = shiftDown(p);
-				} else {
-					TetrisApp.stopGame();
-				}
+				playingPiece = shiftDown(p);
 			}
 		}
 
@@ -125,7 +125,7 @@ public class Board extends JPanel {
 				onRow++;
 				dropTimer = System.currentTimeMillis();
 				tempVertShift = vertShift;
-				if(TetrisApp.getGameFrame().getFastDrop()) {
+				if (TetrisApp.getGameFrame().getFastDrop()) {
 					TetrisApp.getScore().updateUserScore(5);
 				}
 				System.out.println("Current Score: " + TetrisApp.getScore().getUserScore());
@@ -306,7 +306,7 @@ public class Board extends JPanel {
 			}
 		}
 
-		//Clear out old piece locations
+		// Clear out old piece locations
 		for (Point rp : pieceLocations) {
 			if (rp != null) {
 				rp.setNotUsing();
@@ -382,10 +382,10 @@ public class Board extends JPanel {
 				dropTimer = System.currentTimeMillis();
 			}
 		}
-		//Give the user points for clearing the row
+		// Give the user points for clearing the row
 		TetrisApp.getScore().updateUserScore(250);
 	}
-	
+
 	public int getHorzShift() {
 		return horzShift;
 	}
