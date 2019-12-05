@@ -2,7 +2,11 @@ package board;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import data.Score;
+import game.TetrisApp;
 
 /**
  * ScorePanel.java
@@ -33,7 +37,6 @@ public class ScorePanel extends JPanel {
 		//create a label to display user score
 		JLabel userScore = new JLabel("", JLabel.CENTER);
 		userScore.setFont(allFont);
-		userScore.
 
 		//create a label in which to display high scores
 		JLabel scores = new JLabel("", JLabel.CENTER);
@@ -68,7 +71,12 @@ public class ScorePanel extends JPanel {
 		quit.setBounds(0,500,this.getWidth(),50);
 		quit.setBorderPainted(false);
 		
-
+		quit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TetrisApp.stopGame();
+			}
+		});
 		this.add(quit);
 		
 		
