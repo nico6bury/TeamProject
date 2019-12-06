@@ -60,7 +60,7 @@ public class Point extends JPanel {
 		return col;
 	}
 
-	public void setColor(Color c) {
+	private void setColor(Color c) {
 		this.setBackground(c);
 	}
 

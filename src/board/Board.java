@@ -82,7 +82,7 @@ public class Board extends JPanel {
 			// Place all parts of the piece that are on the current row
 			for (int j = 0; j < p.getShape()[onRow].length; j++) {
 				if (p.getShape()[onRow][j] == 1) {
-					points[0][j + horzShift].setColor(p.getColor());
+					points[0][j + horzShift].setInUse(p);
 					pieceLocations[placeCounter] = points[0][j + horzShift];
 					placeCounter++;
 				}
