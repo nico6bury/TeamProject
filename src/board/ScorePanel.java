@@ -52,6 +52,25 @@ public class ScorePanel extends JPanel {
 		hold.setBounds(0, 150, this.getWidth(), 50);
 		hold.setForeground(Color.YELLOW);
 		this.add(hold);
+
+		//create an 2x4 array of Points to hold the held piece
+		Point [][] heldPiece = new Point[2][4];
+		for(int rows = 0; rows < 2; rows++){
+			for(int cols = 0; cols < 4; cols++){
+				heldPiece[rows][cols] = new Point(rows, cols);
+			}
+		}
+
+		//display the held piece
+
+		for(int rows = 0; rows < 2; rows++){
+			for(int cols = 0; cols < 4; cols ++){
+				heldPiece[rows][cols].setBackground(Color.ORANGE);
+				heldPiece[rows][cols].setBounds(40+(cols*30), 200+(rows*30), 30, 30);
+
+				this.add(heldPiece[rows][cols]);
+			}
+		}
 		
 		//create a label under which to display the next pieces
 		
@@ -74,7 +93,7 @@ public class ScorePanel extends JPanel {
 				next3[rows][cols] = new Point(rows, cols);
 			}
 		}
-		
+		//display the next pieces
 		for(int rows = 0; rows < 2; rows++ ){
 			for(int cols = 0; cols < 4 ; cols++){
 				next1[rows][cols].setBackground(Color.ORANGE);
