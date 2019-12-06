@@ -60,6 +60,214 @@ public class Board extends JPanel {
 	}
 
 	/**
+	 * Adds an amount to the horizontal shift of the piece.
+	 * 
+	 * @param shiftAmt The amount of shift to add to the piece.
+	 */
+	public void addHorzShift(int shiftAmt) {
+		if (shiftAmt > 0) {
+			int furthestRight = -1;
+			for (Point p : pieceLocations) {
+				if (p != null) {
+					furthestRight = p.getCol() > furthestRight ? p.getCol() : furthestRight;
+				}
+			}
+			if (furthestRight < COLS - 1) {
+				this.horzShift += shiftAmt;
+			}
+		} else {
+			int furthestLeft = COLS + 1;
+			for (Point p : pieceLocations) {
+				if (p != null) {
+					furthestLeft = p.getCol() < furthestLeft ? p.getCol() : furthestLeft;
+				}
+			}
+			if (furthestLeft > 0) {
+				this.horzShift += shiftAmt;
+			}
+		}
+	}
+
+	/**
+	 * Checks if the piece is able to be shifted down based on if it is too far down
+	 * or going to collide with a piece below it.
+	 * 
+	 * @param p The piece in play
+	 * @return true if the piece can be shifted down.
+	 */
+	private boolean canShiftDown(GenericPiece p) {
+		for (int i = 0; i < pieceLocations.length; i++) {
+			if (pieceLocations[i] != null) {
+				try {
+					int row = pieceLocations[i].getRow() + 1;
+					int col = pieceLocations[i].getCol();
+					if ((row >= ROWS) || (points[row][col].isInUse() && !points[row][col].isInPlay())) {
+						return false;
+					}
+				} catch (ArrayIndexOutOfBoundsException e) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Clears out a full row and shifts the rows above it down.
+	 * 
+	 * @param row The row to clear out.
+	 */
+	private void clearRow(int row) {
+		for (int j = 0; j < COLS; j++) {
+			points[row][j].setNotUsing();
+		}
+
+		int highestRow = -1;
+		for (int i = row; i > 0; i--) {
+			for (int j = 0; j < COLS; j++) {
+				if (points[i][j].isInUse()) {
+					highestRow = i;
+					break;
+				}
+			}
+		}
+
+		// Shift rows down
+		long dropTimer = System.currentTimeMillis();
+		int TIME_GIVEN = 100;
+		int onRow = row;
+
+		while (onRow > highestRow) {
+			if (System.currentTimeMillis() > dropTimer + TIME_GIVEN) {
+				for (int j = 0; j < COLS; j++) {
+					// Shift points from 1 above to down and then remove the row above
+					if (points[onRow - 1][j].isInUse()) {
+						points[onRow][j].setInUse(points[onRow - 1][j].getColor());
+						points[onRow - 1][j].setNotUsing();
+					}
+				}
+				onRow--;
+				dropTimer = System.currentTimeMillis();
+			}
+		}
+		// Give the user points for clearing the row and update the ScorePanel
+		TetrisApp.getScore().updateUserScore(250);
+		TetrisApp.getGameFrame().getScorePanel().updateUserScoreDisplay();
+	}
+
+	/**
+	 * Flips out the currently in-play piece and the held piece.
+	 * 
+	 * @param oldPiece   The old piece that is currently in play.
+	 * @param heldPiece  The held piece.
+	 * @param currentRow The current row
+	 * @return The piece now in play, whether that is the old piece or the held
+	 *         piece.
+	 */
+	private GenericPiece flipHold(GenericPiece oldPiece, GenericPiece heldPiece, int currentRow) {
+		// Sanity checks
+		int[][] newShape = heldPiece.getShapeOptions().get(0);
+		// Adjust left, right, and down shifts
+		for (int i = 0; i < newShape.length; i++) {
+			for (int j = 0; j < newShape[i].length; j++) {
+				if (newShape[i][j] == 1) {
+					while (j + horzShift >= COLS) {
+						horzShift--;
+					}
+					while (j + horzShift < 0) {
+						horzShift++;
+					}
+					while (currentRow - newShape.length < 0) {
+						currentRow++;
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < newShape.length; i++) {
+			for (int j = 0; j < newShape[i].length; j++) {
+				// Check that the shape will fit in the board once flipped out
+				if (newShape[i][j] == 1 && currentRow + newShape.length > ROWS + 1) {
+					return oldPiece;
+				}
+				// Check that the piece will not collide with placed pieces
+				if (newShape[i][j] == 1) {
+					if (points[currentRow - i][j + horzShift].isInUse()
+							&& !points[currentRow - i][j + horzShift].isInPlay()) {
+						return oldPiece;
+					}
+				}
+			}
+		}
+
+		// Clear out old piece locations
+		for (Point rp : pieceLocations) {
+			if (rp != null) {
+				rp.setNotUsing();
+			}
+		}
+		pieceLocations = new Point[10];
+
+		// Place the new piece.
+		int ct = 0;
+		for (int i = 0; i < newShape.length; i++) {
+			for (int j = 0; j < newShape[i].length; j++) {
+				if (newShape[i][j] == 1) {
+					points[currentRow - i][j + horzShift].setInUse(heldPiece);
+					pieceLocations[ct] = points[currentRow - i][j + horzShift];
+					ct++;
+				}
+			}
+		}
+		oldPiece.setCurrentShape(0);
+		TetrisApp.setHoldPiece(oldPiece);
+		TetrisApp.getGameFrame().getScorePanel().updateHoldDisplay();
+		return heldPiece;
+	}
+
+	/**
+	 * Get the horizontal shift of the piece in play.
+	 * 
+	 * @return The shift of the piece.
+	 */
+	public int getHorzShift() {
+		return horzShift;
+	}
+
+	/**
+	 * Gets the amount of rows on the board.
+	 * 
+	 * @return The amount of rows on the board.
+	 */
+	public int getRows() {
+		return ROWS;
+	}
+
+	/**
+	 * Gets the vertical shift of the piece.
+	 * 
+	 * @return The vertical shift of the piece.
+	 */
+	public int getVertShift() {
+		return vertShift;
+	}
+
+	/**
+	 * Checks whether or not the row is full and needs to be cleared.
+	 * 
+	 * @param row The row the check if is full.
+	 * @return If the row is full.
+	 */
+	private boolean isRowFull(int row) {
+		for (int j = 0; j < COLS; j++) {
+			if (!points[row][j].isInUse()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Places a piece and continues to loop allowing the user to move it around
 	 * until the piece finally hits either the bottom of the screen or connects to
 	 * another already placed piece.
@@ -133,9 +341,8 @@ public class Board extends JPanel {
 				tempVertShift = vertShift;
 				if (TetrisApp.getGameFrame().getFastDrop()) {
 					TetrisApp.getScore().updateUserScore(5);
-					TetrisApp.getGameFrame().getScorePanel().updateUserScoreDisplay(TetrisApp.getScore());
+					TetrisApp.getGameFrame().getScorePanel().updateUserScoreDisplay();
 				}
-				System.out.println("Current Score: " + TetrisApp.getScore().getUserScore());
 			}
 		}
 
@@ -153,99 +360,6 @@ public class Board extends JPanel {
 				clearRow(rowCheck);
 			} else {
 				rowCheck--;
-			}
-		}
-	}
-
-	/**
-	 * Shifts the piece down 1 section.
-	 * 
-	 * @param p The piece that is currently in play.
-	 * @return continue - whether or not the piece will continue to be in play.
-	 */
-	private boolean shiftDown(GenericPiece p) {
-		boolean cont = canShiftDown(p);
-		if (cont) {
-			for (int i = 0; i < pieceLocations.length; i++) {
-				if (pieceLocations[i] != null) {
-					pieceLocations[i].setNotUsing();
-					int row = pieceLocations[i].getRow() + 1;
-					int col = pieceLocations[i].getCol();
-					pieceLocations[i] = points[row][col];
-				}
-			}
-			for (Point point : pieceLocations) {
-				if (point != null) {
-					point.setInUse(p);
-				}
-			}
-		}
-		return cont;
-	}
-
-	/**
-	 * Checks if the piece is able to be shifted down based on if it is too far down
-	 * or going to collide with a piece below it.
-	 * 
-	 * @param p The piece in play
-	 * @return true if the piece can be shifted down.
-	 */
-	private boolean canShiftDown(GenericPiece p) {
-		for (int i = 0; i < pieceLocations.length; i++) {
-			if (pieceLocations[i] != null) {
-				try {
-					int row = pieceLocations[i].getRow() + 1;
-					int col = pieceLocations[i].getCol();
-					if ((row >= ROWS) || (points[row][col].isInUse() && !points[row][col].isInPlay())) {
-						return false;
-					}
-				} catch (ArrayIndexOutOfBoundsException e) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Shifts the piece that is currently in play to the left or the right.
-	 * 
-	 * @param p   The piece that is currently in play.
-	 * @param amt The amount to shift the piece.
-	 */
-	private void shiftSide(GenericPiece p, int amt) {
-		int index = 0; // Index of looping through the pointLocations
-		boolean doIt = true;
-		for (Point point : pieceLocations) {
-			if (point != null) {
-				try {
-					if (points[pieceLocations[index].getRow()][pieceLocations[index].getCol() + amt].isInUse()
-							&& !points[pieceLocations[index].getRow()][pieceLocations[index].getCol() + amt]
-									.isInPlay()) {
-						doIt = false;
-					}
-				} catch (ArrayIndexOutOfBoundsException ne) {
-					// ArrayIndexOutOfBoundsException from going out of the board
-					doIt = false;
-				}
-				index++;
-			}
-		}
-		if (doIt) {
-			index = 0;
-			for (Point point : pieceLocations) {
-				if (point != null) {
-					int row = pieceLocations[index].getRow();
-					int col = pieceLocations[index].getCol() + amt;
-					pieceLocations[index] = points[row][col];
-					point.setNotUsing();
-					index++;
-				}
-			}
-			for (Point point : pieceLocations) {
-				if (point != null) {
-					point.setInUse(p);
-				}
 			}
 		}
 	}
@@ -337,178 +451,12 @@ public class Board extends JPanel {
 	}
 
 	/**
-	 * Flips out the currently in-play piece and the held piece.
+	 * Set whether or not the piece needs to be flipped out with the held piece.
 	 * 
-	 * @param oldPiece   The old piece that is currently in play.
-	 * @param heldPiece  The held piece.
-	 * @param currentRow The current row
-	 * @return The piece now in play, whether that is the old piece or the held
-	 *         piece.
+	 * @param b true if the piece needs to be flipped out.
 	 */
-	private GenericPiece flipHold(GenericPiece oldPiece, GenericPiece heldPiece, int currentRow) {
-		// Sanity checks
-		int[][] newShape = heldPiece.getShapeOptions().get(0);
-		// Adjust left, right, and down shifts
-		for (int i = 0; i < newShape.length; i++) {
-			for (int j = 0; j < newShape[i].length; j++) {
-				if (newShape[i][j] == 1) {
-					while (j + horzShift >= COLS) {
-						horzShift--;
-					}
-					while (j + horzShift < 0) {
-						horzShift++;
-					}
-					while (currentRow - newShape.length < 0) {
-						currentRow++;
-					}
-				}
-			}
-		}
-
-		for (int i = 0; i < newShape.length; i++) {
-			for (int j = 0; j < newShape[i].length; j++) {
-				// Check that the shape will fit in the board once flipped out
-				if (newShape[i][j] == 1 && currentRow + newShape.length > ROWS + 1) {
-					return oldPiece;
-				}
-				// Check that the piece will not collide with placed pieces
-				if (newShape[i][j] == 1) {
-					if (points[currentRow - i][j + horzShift].isInUse()
-							&& !points[currentRow - i][j + horzShift].isInPlay()) {
-						return oldPiece;
-					}
-				}
-			}
-		}
-
-		// Clear out old piece locations
-		for (Point rp : pieceLocations) {
-			if (rp != null) {
-				rp.setNotUsing();
-			}
-		}
-		pieceLocations = new Point[10];
-
-		// Place the new piece.
-		int ct = 0;
-		for (int i = 0; i < newShape.length; i++) {
-			for (int j = 0; j < newShape[i].length; j++) {
-				if (newShape[i][j] == 1) {
-					points[currentRow - i][j + horzShift].setInUse(heldPiece);
-					pieceLocations[ct] = points[currentRow - i][j + horzShift];
-					ct++;
-				}
-			}
-		}
-		oldPiece.setCurrentShape(0);
-		TetrisApp.setHoldPiece(oldPiece);
-		TetrisApp.getGameFrame().getScorePanel().updateHoldDisplay();
-		return heldPiece;
-	}
-
-	/**
-	 * Checks whether or not the row is full and needs to be cleared.
-	 * 
-	 * @param row The row the check if is full.
-	 * @return If the row is full.
-	 */
-	private boolean isRowFull(int row) {
-		for (int j = 0; j < COLS; j++) {
-			if (!points[row][j].isInUse()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Clears out a full row and shifts the rows above it down.
-	 * 
-	 * @param row The row to clear out.
-	 */
-	private void clearRow(int row) {
-		for (int j = 0; j < COLS; j++) {
-			points[row][j].setNotUsing();
-		}
-
-		int highestRow = -1;
-		for (int i = row; i > 0; i--) {
-			for (int j = 0; j < COLS; j++) {
-				if (points[i][j].isInUse()) {
-					highestRow = i;
-					break;
-				}
-			}
-		}
-
-		// Shift rows down
-		long dropTimer = System.currentTimeMillis();
-		int TIME_GIVEN = 100;
-		int onRow = row;
-
-		while (onRow > highestRow) {
-			if (System.currentTimeMillis() > dropTimer + TIME_GIVEN) {
-				for (int j = 0; j < COLS; j++) {
-					// Shift points from 1 above to down and then remove the row above
-					if (points[onRow - 1][j].isInUse()) {
-						points[onRow][j].setInUse(points[onRow - 1][j].getColor());
-						points[onRow - 1][j].setNotUsing();
-					}
-				}
-				onRow--;
-				dropTimer = System.currentTimeMillis();
-			}
-		}
-		// Give the user points for clearing the row and update the ScorePanel
-		TetrisApp.getScore().updateUserScore(250);
-		TetrisApp.getGameFrame().getScorePanel().updateUserScoreDisplay(TetrisApp.getScore());
-	}
-
-	/**
-	 * Get the horizontal shift of the piece in play.
-	 * 
-	 * @return The shift of the piece.
-	 */
-	public int getHorzShift() {
-		return horzShift;
-	}
-
-	/**
-	 * Adds an amount to the horizontal shift of the piece.
-	 * 
-	 * @param shiftAmt The amount of shift to add to the piece.
-	 */
-	public void addHorzShift(int shiftAmt) {
-		if (shiftAmt > 0) {
-			int furthestRight = -1;
-			for (Point p : pieceLocations) {
-				if (p != null) {
-					furthestRight = p.getCol() > furthestRight ? p.getCol() : furthestRight;
-				}
-			}
-			if (furthestRight < COLS - 1) {
-				this.horzShift += shiftAmt;
-			}
-		} else {
-			int furthestLeft = COLS + 1;
-			for (Point p : pieceLocations) {
-				if (p != null) {
-					furthestLeft = p.getCol() < furthestLeft ? p.getCol() : furthestLeft;
-				}
-			}
-			if (furthestLeft > 0) {
-				this.horzShift += shiftAmt;
-			}
-		}
-	}
-
-	/**
-	 * Gets the vertical shift of the piece.
-	 * 
-	 * @return The vertical shift of the piece.
-	 */
-	public int getVertShift() {
-		return vertShift;
+	public void setNeedsFlip(boolean b) {
+		this.needsFlip = b;
 	}
 
 	/**
@@ -521,20 +469,71 @@ public class Board extends JPanel {
 	}
 
 	/**
-	 * Gets the amount of rows on the board.
+	 * Shifts the piece down 1 section.
 	 * 
-	 * @return The amount of rows on the board.
+	 * @param p The piece that is currently in play.
+	 * @return continue - whether or not the piece will continue to be in play.
 	 */
-	public int getRows() {
-		return ROWS;
+	private boolean shiftDown(GenericPiece p) {
+		boolean cont = canShiftDown(p);
+		if (cont) {
+			for (int i = 0; i < pieceLocations.length; i++) {
+				if (pieceLocations[i] != null) {
+					pieceLocations[i].setNotUsing();
+					int row = pieceLocations[i].getRow() + 1;
+					int col = pieceLocations[i].getCol();
+					pieceLocations[i] = points[row][col];
+				}
+			}
+			for (Point point : pieceLocations) {
+				if (point != null) {
+					point.setInUse(p);
+				}
+			}
+		}
+		return cont;
 	}
 
 	/**
-	 * Set whether or not the piece needs to be flipped out with the held piece.
+	 * Shifts the piece that is currently in play to the left or the right.
 	 * 
-	 * @param b true if the piece needs to be flipped out.
+	 * @param p   The piece that is currently in play.
+	 * @param amt The amount to shift the piece.
 	 */
-	public void setNeedsFlip(boolean b) {
-		this.needsFlip = b;
+	private void shiftSide(GenericPiece p, int amt) {
+		int index = 0; // Index of looping through the pointLocations
+		boolean doIt = true;
+		for (Point point : pieceLocations) {
+			if (point != null) {
+				try {
+					if (points[pieceLocations[index].getRow()][pieceLocations[index].getCol() + amt].isInUse()
+							&& !points[pieceLocations[index].getRow()][pieceLocations[index].getCol() + amt]
+									.isInPlay()) {
+						doIt = false;
+					}
+				} catch (ArrayIndexOutOfBoundsException ne) {
+					// ArrayIndexOutOfBoundsException from going out of the board
+					doIt = false;
+				}
+				index++;
+			}
+		}
+		if (doIt) {
+			index = 0;
+			for (Point point : pieceLocations) {
+				if (point != null) {
+					int row = pieceLocations[index].getRow();
+					int col = pieceLocations[index].getCol() + amt;
+					pieceLocations[index] = points[row][col];
+					point.setNotUsing();
+					index++;
+				}
+			}
+			for (Point point : pieceLocations) {
+				if (point != null) {
+					point.setInUse(p);
+				}
+			}
+		}
 	}
 }

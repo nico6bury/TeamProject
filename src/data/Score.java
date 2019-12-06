@@ -1,17 +1,21 @@
 package data;
-/** Score.java
- * The purpose of this class is to hold information for both the user's
- * current score as well as the high scores, which are stored in a text
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import javax.swing.JOptionPane;
+
+/**
+ * Score.java The purpose of this class is to hold information for both the
+ * user's current score as well as the high scores, which are stored in a text
  * file.
  * 
  * @author Nicholas Sixbury
  */
-
-import java.util.ArrayList;
-import java.util.Scanner;
-import javax.swing.JOptionPane;
-import java.io.*;
-
 public class Score {
 	final private int SCORE_TO_KEEP = 3;
 	private int userScore;
@@ -39,6 +43,41 @@ public class Score {
 	}// end no-arg constructor
 
 	/**
+	 * Prompts the user for a username with a max of 3 characters.
+	 * 
+	 * @return A string of length between 1 and 3 inclusive that represents the
+	 *         player's name.
+	 */
+	private String getUsername() {
+		try {
+			String name = JOptionPane.showInputDialog(null, "What is your name?\n" + "You can use three characters.");
+			while (name.length() > 3 || name.length() < 1) {
+				if (name.length() > 3) {
+					name = JOptionPane.showInputDialog(null,
+							"Please enter 3 characters or less.\n" + "What is your name?");
+				} // end if greater than 3 chars
+				else {
+					name = JOptionPane.showInputDialog(null,
+							"You must enter at least something.\n" + "What is your name?");
+				} // end else name is empty
+			} // end while
+			return name.toUpperCase();
+		} catch (NullPointerException e) {
+			JOptionPane.showMessageDialog(null, "You MUST Enter a name!");
+			return getUsername();
+		}
+	}// end getUsername
+
+	/**
+	 * getUserScore A get method for userScore
+	 * 
+	 * @return returns the current user's score as an integer
+	 */
+	public int getUserScore() {
+		return userScore;
+	}// end getUserScore
+
+	/**
 	 * readFile() This method reads whatever File object was created to the parallel
 	 * arrayLists names and highScore.
 	 */
@@ -55,18 +94,11 @@ public class Score {
 	}// end readFile
 
 	/**
-	 * writeFile() This method writes all the data in the parallel ArrayLists names
-	 * and highScore to a File created on object creation. It accomplishes this by
-	 * printing the toString of this class.
+	 * resetUserScore sets the user's score to 0
 	 */
-	public void writeFile() {
-		try (PrintWriter pw = new PrintWriter(scoresFile);) {
-			pw.println(toString());
-			pw.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}// end writeFile
+	public void resetUserScore() {
+		userScore = 0;
+	}// end resetUserScore
 
 	/**
 	 * toString This method will return a String representation of the current
@@ -76,6 +108,7 @@ public class Score {
 	 * 
 	 * @return returns a String representation of the current score
 	 */
+	@Override
 	public String toString() {
 		if (names.size() != highScore.size()) {
 			return "Error: Bad Data";
@@ -95,33 +128,6 @@ public class Score {
 			return sb.toString();
 		} // end else
 	}// end toString
-
-	/**
-	 * updateUserScore This method lets you update the user's score by adding an int
-	 * to their current score. To subtract points, call this method with a negative
-	 * number.
-	 * 
-	 * @param addition This is the number by which to add to the score
-	 */
-	public void updateUserScore(int addition) {
-		userScore += addition;
-	}// end updateUserScore
-
-	/**
-	 * getUserScore A get method for userScore
-	 * 
-	 * @return returns the current user's score as an integer
-	 */
-	public int getUserScore() {
-		return userScore;
-	}// end getUserScore
-
-	/**
-	 * resetUserScore sets the user's score to 0
-	 */
-	public void resetUserScore() {
-		userScore = 0;
-	}// end resetUserScore
 
 	/**
 	 * updateHighScore This method tests whether or not the highScore needs to be
@@ -170,23 +176,28 @@ public class Score {
 		}
 	}// end updateHighScore
 
-	private String getUsername() {
-		try {
-			String name = JOptionPane.showInputDialog(null, "What is your name?\n" + "You can use three characters.");
-			while (name.length() > 3 || name.length() < 1) {
-				if (name.length() > 3) {
-					name = JOptionPane.showInputDialog(null,
-							"Please enter 3 characters or less.\n" + "What is your name?");
-				} // end if greater than 3 chars
-				else {
-					name = JOptionPane.showInputDialog(null,
-							"You must enter at least something.\n" + "What is your name?");
-				} // end else name is empty
-			} // end while
-			return name.toUpperCase();
-		} catch (NullPointerException e) {
-			JOptionPane.showMessageDialog(null, "You MUST Enter a name!");
-			return getUsername();
+	/**
+	 * updateUserScore This method lets you update the user's score by adding an int
+	 * to their current score. To subtract points, call this method with a negative
+	 * number.
+	 * 
+	 * @param addition This is the number by which to add to the score
+	 */
+	public void updateUserScore(int addition) {
+		userScore += addition;
+	}// end updateUserScore
+
+	/**
+	 * writeFile() This method writes all the data in the parallel ArrayLists names
+	 * and highScore to a File created on object creation. It accomplishes this by
+	 * printing the toString of this class.
+	 */
+	public void writeFile() {
+		try (PrintWriter pw = new PrintWriter(scoresFile);) {
+			pw.println(toString());
+			pw.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
-	}// end getUsername
+	}// end writeFile
 }// end class

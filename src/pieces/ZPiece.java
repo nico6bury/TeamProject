@@ -3,8 +3,8 @@ package pieces;
 import java.awt.Color;
 
 /**
- * ZPiece is a representation of the tetris piece commonly referred to as a "Z
- * piece"
+ * ZPiece is a representation of the tetris piece commonly referred to as a
+ * "ZPiece"
  * 
  * @author Brian edits to original: Stephanie
  */

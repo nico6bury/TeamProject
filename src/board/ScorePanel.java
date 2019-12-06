@@ -8,14 +8,15 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
-import data.Score;
 import game.TetrisApp;
 
 /**
- * ScorePanel.java Created by Laura Baldwin Purpose: This class is to display
- * the highscores, the block on hold, the blocks coming up, and a button to quit
- * the program
+ * ScorePanel This class is to display the highscores, the block on hold, the
+ * blocks coming up, and a button to quit the program.
+ * 
+ * @author Laura Baldwin
  */
 public class ScorePanel extends JPanel {
 	/**
@@ -28,7 +29,11 @@ public class ScorePanel extends JPanel {
 	private static Point[][] next2;
 	private static Point[][] next3;
 
-	public ScorePanel(Score score) {
+	/**
+	 * Creates a score panel that displays current score, high score, next pieces,
+	 * and hold piece. Warning, dimension and location values are hard-coded in.
+	 */
+	public ScorePanel() {
 		this.setSize(200, 600);
 		this.setBounds(300, 0, 200, 600);
 		this.setBackground(Color.black);
@@ -36,7 +41,7 @@ public class ScorePanel extends JPanel {
 		heldPiece = null;
 
 		// create a label under which to display the scores
-		JLabel title = new JLabel("High Scores:", JLabel.CENTER);
+		JLabel title = new JLabel("High Scores:", SwingConstants.CENTER);
 		Font allFont = new Font(title.getFont().getName(), Font.BOLD, 24);
 		title.setFont(allFont);
 		title.setBounds(0, 0, this.getWidth(), 40);
@@ -44,28 +49,23 @@ public class ScorePanel extends JPanel {
 		this.add(title);
 
 		// create a label in which to display high scores
-		JLabel scores = new JLabel(getHighScores(score), JLabel.CENTER);
+		JLabel scores = new JLabel(getHighScores(), SwingConstants.CENTER);
 		Font scoreFont = new Font(title.getFont().getName(), Font.BOLD, 20);
 		scores.setFont(scoreFont);
 		scores.setBounds(0, 40, this.getWidth(), 80);
 		scores.setForeground(Color.YELLOW);
 		this.add(scores);
 
-		// create a label under which to display the user's score
-
 		// create a label to display user score
-		Integer intScore = score.getUserScore();
-
-		userScore = new JLabel("Your Score: " + intScore.toString(), JLabel.CENTER);
-
+		Integer intScore = TetrisApp.getScore().getUserScore();
+		userScore = new JLabel("Your Score: " + intScore.toString(), SwingConstants.CENTER);
 		userScore.setFont(scoreFont);
 		userScore.setBounds(0, 80, this.getWidth(), 140);
 		userScore.setForeground(Color.YELLOW);
 		this.add(userScore);
 
 		// create a label under which to display the block on hold
-
-		JLabel hold = new JLabel("Hold:", JLabel.CENTER);
+		JLabel hold = new JLabel("Hold:", SwingConstants.CENTER);
 		hold.setFont(allFont);
 		hold.setBounds(0, 170, this.getWidth(), 70);
 		hold.setForeground(Color.YELLOW);
@@ -80,7 +80,7 @@ public class ScorePanel extends JPanel {
 		}
 
 		// create a label under which to display the next pieces
-		JLabel next = new JLabel("Next:", JLabel.CENTER);
+		JLabel next = new JLabel("Next:", SwingConstants.CENTER);
 		next.setFont(allFont);
 		next.setBounds(0, 300, this.getWidth(), 50);
 		next.setForeground(Color.YELLOW);
@@ -98,13 +98,11 @@ public class ScorePanel extends JPanel {
 				next3[rows][cols] = new Point(rows, cols);
 			}
 		}
-		// display the next pieces
 
 		// create button to quit game
 		JButton quit = new JButton("Quit");
 		quit.setBackground(Color.BLACK);
 		quit.setForeground(Color.YELLOW);
-		// Font quitFont = new Font(next.getFont().getName(), Font.BOLD, 24);
 		quit.setFont(allFont);
 		quit.setBounds(0, 570, this.getWidth(), 30);
 		quit.setBorderPainted(false);
@@ -119,6 +117,34 @@ public class ScorePanel extends JPanel {
 
 	}
 
+	/**
+	 * Gets the high score from the score object in the TetrisApp driver class and
+	 * parses it into a displayable format that can be put onto a label.
+	 * 
+	 * @return A string that can be put on a label to display the high scores.
+	 */
+	private String getHighScores() {
+		// create String [] to parse the highscores into
+		String[] highScores = TetrisApp.getScore().toString().split("\n");
+		StringBuilder sb = new StringBuilder();
+		sb.append("<HTML><body>");
+		for (int count = 0; count < highScores.length; count++) {
+			if (count == highScores.length - 1) {
+				sb.append(highScores[count]);
+			} else {
+				sb.append(highScores[count]);
+				sb.append("<br>");
+			}
+		}
+		sb.append("</body></HTML>");
+		String stringScores = sb.toString();
+		return stringScores;
+	}
+
+	/**
+	 * Updates the display area of the hold piece to the piece currently being held
+	 * by the TetrisApp class.
+	 */
 	public void updateHoldDisplay() {
 		for (int rows = 0; rows < 2; rows++) {
 			for (int cols = 0; cols < 4; cols++) {
@@ -140,6 +166,10 @@ public class ScorePanel extends JPanel {
 		repaint();
 	}
 
+	/**
+	 * Updates the next piece display to the pieces currently being stored in the
+	 * TetrisApp from the next piece array list.
+	 */
 	public void updateNextPieceDisplay() {
 		for (int rows = 0; rows < 2; rows++) {
 			for (int cols = 0; cols < 4; cols++) {
@@ -187,26 +217,11 @@ public class ScorePanel extends JPanel {
 		repaint();
 	}
 
-	private String getHighScores(Score score) {
-		// create String [] to parse the highscores into
-		String[] highScores = score.toString().split("\n");
-		StringBuilder sb = new StringBuilder();
-		sb.append("<HTML><body>");
-		for (int count = 0; count < highScores.length; count++) {
-			if (count == highScores.length - 1) {
-				sb.append(highScores[count]);
-			} else {
-				sb.append(highScores[count]);
-				sb.append("<br>");
-			}
-		}
-		sb.append("</body></HTML>");
-		String stringScores = sb.toString();
-		return stringScores;
-	}
-
-	public void updateUserScoreDisplay(Score score) {
-		Integer intScore = score.getUserScore();
+	/**
+	 * Updates the user score display label to the current score of the user.
+	 */
+	public void updateUserScoreDisplay() {
+		Integer intScore = TetrisApp.getScore().getUserScore();
 		userScore.setText("Your Score: " + intScore.toString());
 
 	}

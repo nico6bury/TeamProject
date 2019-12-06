@@ -7,6 +7,14 @@ import javax.swing.JPanel;
 
 import pieces.GenericPiece;
 
+/**
+ * Point is a class that represents a point in the game that can be used to
+ * display pieces that are already placed, being used by the piece in play, or
+ * can be used to display other shapes.
+ * 
+ * @author Brian, Nicholas
+ *
+ */
 public class Point extends JPanel {
 	/**
 	 * Generated Serial Version ID
@@ -17,6 +25,12 @@ public class Point extends JPanel {
 	private boolean inUse;
 	private boolean inPlay;
 
+	/**
+	 * Creates a new point object.
+	 * 
+	 * @param row The row that the point is on.
+	 * @param col The column that the point is on.
+	 */
 	public Point(int row, int col) {
 		// Create looks
 		this.inUse = false;
@@ -25,17 +39,6 @@ public class Point extends JPanel {
 		this.col = col;
 		this.setBackground(Color.DARK_GRAY);
 		this.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-	}
-
-	/**
-	 * toString() This special method returns out the contents of the point object
-	 * as a string. It does so in the format (x,y)
-	 * 
-	 * @return The method returns the contents of the current point object as a
-	 *         String in the format (x,y)
-	 */
-	public String toString() {
-		return ("(" + row + "," + col + ") is the color: " + getColor());
 	}
 
 	/**
@@ -53,15 +56,6 @@ public class Point extends JPanel {
 	}
 
 	/**
-	 * Get the row of the point on the board.
-	 * 
-	 * @return The row of the point.
-	 */
-	public int getRow() {
-		return row;
-	}
-
-	/**
 	 * Get the column of the point on the board.
 	 * 
 	 * @return The column of the point.
@@ -71,14 +65,57 @@ public class Point extends JPanel {
 	}
 
 	/**
-	 * Sets the point as in use by a specific piece. Sets in use to the color of the
-	 * piece and in play to true.
+	 * Gets the color of the point.
 	 * 
-	 * @param p The piece that the point is being used by.
+	 * @return The color of the point.
 	 */
-	public void setInUse(GenericPiece p) {
-		this.setInUse(p.getColor());
-		this.inPlay = true;
+	public Color getColor() {
+		return this.getBackground();
+	}
+
+	/**
+	 * Get the row of the point on the board.
+	 * 
+	 * @return The row of the point.
+	 */
+	public int getRow() {
+		return row;
+	}
+
+	/**
+	 * Gets whether or not the piece is in play.
+	 * 
+	 * @param inPlay true if the piece is in play.
+	 */
+	public boolean isInPlay() {
+		return this.inPlay;
+	}
+
+	/**
+	 * Gets whether or not the point is currently in use.
+	 * 
+	 * @return true if the point is in use.
+	 */
+	public boolean isInUse() {
+		return this.inUse;
+	}
+
+	/**
+	 * Sets the color of the point, does not set in use or in play.
+	 * 
+	 * @param c The color to set the point to.
+	 */
+	private void setColor(Color c) {
+		this.setBackground(c);
+	}
+
+	/**
+	 * Sets whether or not the piece is in play.
+	 * 
+	 * @param inPlay true if the piece is in play.
+	 */
+	public void setInPlay(boolean inPlay) {
+		this.inPlay = inPlay;
 	}
 
 	/**
@@ -93,6 +130,17 @@ public class Point extends JPanel {
 	}
 
 	/**
+	 * Sets the point as in use by a specific piece. Sets in use to the color of the
+	 * piece and in play to true.
+	 * 
+	 * @param p The piece that the point is being used by.
+	 */
+	public void setInUse(GenericPiece p) {
+		this.setInUse(p.getColor());
+		this.inPlay = true;
+	}
+
+	/**
 	 * Set the piece to not being used. Includes setting it to not being in play by
 	 * the current piece.
 	 */
@@ -103,47 +151,14 @@ public class Point extends JPanel {
 	}
 
 	/**
-	 * Gets whether or not the point is currently in use.
+	 * toString() This special method returns out the contents of the point object
+	 * as a string. It does so in the format (x,y)
 	 * 
-	 * @return true if the point is in use.
+	 * @return The method returns the contents of the current point object as a
+	 *         String in the format (x,y)
 	 */
-	public boolean isInUse() {
-		return this.inUse;
-	}
-
-	/**
-	 * Sets whether or not the piece is in play.
-	 * 
-	 * @param inPlay true if the piece is in play.
-	 */
-	public void setInPlay(boolean inPlay) {
-		this.inPlay = inPlay;
-	}
-
-	/**
-	 * Gets whether or not the piece is in play.
-	 * 
-	 * @param inPlay true if the piece is in play.
-	 */
-	public boolean isInPlay() {
-		return this.inPlay;
-	}
-
-	/**
-	 * Sets the color of the point, does not set in use or in play.
-	 * 
-	 * @param c The color to set the point to.
-	 */
-	private void setColor(Color c) {
-		this.setBackground(c);
-	}
-
-	/**
-	 * Gets the color of the point.
-	 * 
-	 * @return The color of the point.
-	 */
-	public Color getColor() {
-		return this.getBackground();
+	@Override
+	public String toString() {
+		return ("(" + row + "," + col + ") is the color: " + getColor());
 	}
 }
