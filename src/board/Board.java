@@ -134,9 +134,13 @@ public class Board extends JPanel {
 			if (System.currentTimeMillis() > dropTimer + TIME_GIVEN) {
 				for (int j = 0; j < COLS; j++) {
 					// Shift points from 1 above to down and then remove the row above
-					if (points[onRow - 1][j].isInUse()) {
-						points[onRow][j].setInUse(points[onRow - 1][j].getColor());
-						points[onRow - 1][j].setNotUsing();
+					try {
+						if (points[onRow - 1][j].isInUse()) {
+							points[onRow][j].setInUse(points[onRow - 1][j].getColor());
+							points[onRow - 1][j].setNotUsing();
+						}
+					} catch(ArrayIndexOutOfBoundsException ae) {
+						//Random potential for error when a 2 rows clear at the top.
 					}
 				}
 				onRow--;
