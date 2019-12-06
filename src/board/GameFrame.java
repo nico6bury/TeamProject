@@ -50,13 +50,17 @@ public class GameFrame extends JFrame implements KeyEventDispatcher {
 				board.addHorzShift(1);
 			}
 
-			// 38 is the up arrow that rotates the piece.
-			if (e.getKeyCode() == 38) {
-				board.setNeedsTurn(true);
+			// 90 is the Z that rotates the piece clockwise.
+			if (e.getKeyCode() == 90) {
+				board.setTurnDirection(1);
+			}
+			// 88 is the X key that rotates the piece counter-clockwise.
+			if(e.getKeyCode() == 88) {
+				board.setTurnDirection(-1);
 			}
 
-			// 17 is the right ctrl that flips the held piece.
-			if (e.getKeyCode() == 17) {
+			// 67 is the C key that flips the held piece.
+			if (e.getKeyCode() == 67) {
 				board.setNeedsFlip(true);
 			}
 		}

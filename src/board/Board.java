@@ -6,13 +6,6 @@ import javax.swing.JPanel;
 
 import game.TetrisApp;
 import pieces.GenericPiece;
-import pieces.JPiece;
-import pieces.LPiece;
-import pieces.SPiece;
-import pieces.SquarePiece;
-import pieces.StickPiece;
-import pieces.TPiece;
-import pieces.ZPiece;
 
 /**
  * Board contains methods relating to piece movement, gameplay, and also manages
@@ -33,7 +26,7 @@ public class Board extends JPanel {
 	private static final int BOARD_HEIGHT = 600;
 	private int horzShift = 0;
 	private int vertShift = 0;
-	private boolean needsTurn = false;
+	private int turnDirection = 0;
 	private boolean needsFlip = false;
 	private Point[][] points;
 	private Point[] pieceLocations;
@@ -322,9 +315,9 @@ public class Board extends JPanel {
 				tempHorzShift = horzShift;
 			}
 			// Check if the piece needs to rotate.
-			if (needsTurn) {
-				rotate(p, onRow);
-				needsTurn = false;
+			if (turnDirection != 0) {
+				rotate(p, onRow, turnDirection);
+				turnDirection = 0;
 				tempHorzShift = horzShift;
 			}
 			// Check if the pieces needs to be flipped.
@@ -369,11 +362,19 @@ public class Board extends JPanel {
 	 * 
 	 * @param p          The piece to rotate.
 	 * @param currentRow The current row that the piece is on.
+	 * @param direction  The direction to rotate the piece, either 1 for clockwise
+	 *                   or -1 for counter-clockwise
 	 * @return true if the rotation was successful.
 	 */
-	private boolean rotate(GenericPiece p, int currentRow) {
+	private boolean rotate(GenericPiece p, int currentRow, int direction) {
 		int ind = 0;
-		ind = p.getCurrentShapeIndex() == p.getShapeOptions().size() - 1 ? 0 : p.getCurrentShapeIndex() + 1;
+		if (direction < 0) {
+			ind = p.getCurrentShapeIndex() + direction >= 0 ? p.getCurrentShapeIndex() + direction
+					: p.getShapeOptions().size() + direction;
+		} else {
+			ind = p.getCurrentShapeIndex() + direction > p.getShapeOptions().size() - 1 ? 0
+					: p.getCurrentShapeIndex() + direction;
+		}
 
 		// Sanity checks
 		int[][] newShape = p.getShapeOptions().get(ind);
@@ -443,12 +444,13 @@ public class Board extends JPanel {
 	}
 
 	/**
-	 * Set whether or not the piece needs to be rotated.
+	 * Sets the direction of rotation for the piece.
 	 * 
-	 * @param needsTurn true if the piece needs to be rotated.
+	 * @param direction a positive number to rotate the piece clockwise, negative
+	 *                  for counter-clockwise.
 	 */
-	public void setNeedsTurn(boolean needsTurn) {
-		this.needsTurn = needsTurn;
+	public void setTurnDirection(int direction) {
+		this.turnDirection = direction;
 	}
 
 	/**
