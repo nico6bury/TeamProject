@@ -252,9 +252,9 @@ public class Board extends JPanel {
 	/**
 	 * Rotates the piece to the next rotation state.
 	 * 
-	 * @param p          The piece to rotate
+	 * @param p          The piece to rotate.
 	 * @param currentRow The current row that the piece is on.
-	 * @return
+	 * @return true if the rotation was successful.
 	 */
 	private boolean rotate(GenericPiece p, int currentRow) {
 		int ind = 0;
@@ -335,6 +335,15 @@ public class Board extends JPanel {
 		return true;
 	}
 
+	/**
+	 * Flips out the currently in-play piece and the held piece.
+	 * 
+	 * @param oldPiece   The old piece that is currently in play.
+	 * @param heldPiece  The held piece.
+	 * @param currentRow The current row
+	 * @return The piece now in play, whether that is the old piece or the held
+	 *         piece.
+	 */
 	private GenericPiece flipHold(GenericPiece oldPiece, GenericPiece heldPiece, int currentRow) {
 		// Sanity checks
 		int[][] newShape = heldPiece.getShapeOptions().get(0);
@@ -354,7 +363,7 @@ public class Board extends JPanel {
 				}
 			}
 		}
-		
+
 		for (int i = 0; i < newShape.length; i++) {
 			for (int j = 0; j < newShape[i].length; j++) {
 				// Check that the shape will fit in the board once flipped out
@@ -453,10 +462,20 @@ public class Board extends JPanel {
 		TetrisApp.getScore().updateUserScore(250);
 	}
 
+	/**
+	 * Get the horizontal shift of the piece in play.
+	 * 
+	 * @return The shift of the piece.
+	 */
 	public int getHorzShift() {
 		return horzShift;
 	}
 
+	/**
+	 * Adds an amount to the horizontal shift of the piece.
+	 * 
+	 * @param shiftAmt The amount of shift to add to the piece.
+	 */
 	public void addHorzShift(int shiftAmt) {
 		if (shiftAmt > 0) {
 			int furthestRight = -1;
@@ -481,31 +500,39 @@ public class Board extends JPanel {
 		}
 	}
 
+	/**
+	 * Gets the vertical shift of the piece.
+	 * 
+	 * @return The vertical shift of the piece.
+	 */
 	public int getVertShift() {
 		return vertShift;
 	}
 
-	public void setVertShift(int vertShift) {
-		this.vertShift = vertShift;
-	}
-
-	public boolean isNeedsTurn() {
-		return needsTurn;
-	}
-
+	/**
+	 * Set whether or not the piece needs to be rotated.
+	 * 
+	 * @param needsTurn true if the piece needs to be rotated.
+	 */
 	public void setNeedsTurn(boolean needsTurn) {
 		this.needsTurn = needsTurn;
 	}
 
+	/**
+	 * Gets the amount of rows on the board.
+	 * 
+	 * @return The amount of rows on the board.
+	 */
 	public int getRows() {
 		return ROWS;
 	}
 
+	/**
+	 * Set whether or not the piece needs to be flipped out with the held piece.
+	 * 
+	 * @param b true if the piece needs to be flipped out.
+	 */
 	public void setNeedsFlip(boolean b) {
 		this.needsFlip = b;
-	}
-
-	public boolean getNeedsFlip() {
-		return this.needsFlip;
 	}
 }
