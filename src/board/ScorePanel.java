@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import game.TetrisApp;
-import jdk.nashorn.internal.ir.Terminal;
 import pieces.GenericPiece;
 
 /**
@@ -52,7 +51,6 @@ public class ScorePanel extends JPanel {
 		// create a label under which to display the block on hold
 
 		JLabel hold = new JLabel("Hold:", JLabel.CENTER);
-		// Font holdFont = new Font(hold.getFont().getName(), Font.BOLD, 24);
 		hold.setFont(allFont);
 		hold.setBounds(0, 150, this.getWidth(), 50);
 		hold.setForeground(Color.YELLOW);
@@ -71,7 +69,6 @@ public class ScorePanel extends JPanel {
 
 		// create a label under which to display the next pieces
 		JLabel next = new JLabel("Next:", JLabel.CENTER);
-		// Font nextFont = new Font(next.getFont().getName(), Font.BOLD, 24);
 		next.setFont(allFont);
 		next.setBounds(0, 300, this.getWidth(), 50);
 		next.setForeground(Color.YELLOW);
@@ -90,22 +87,7 @@ public class ScorePanel extends JPanel {
 			}
 		}
 		// display the next pieces
-		for (int rows = 0; rows < 2; rows++) {
-			for (int cols = 0; cols < 4; cols++) {
-				next1[rows][cols].setBackground(Color.ORANGE);
-				next1[rows][cols].setBounds(40 + (cols * 30), 350 + (rows * 30), 30, 30);
-
-				next2[rows][cols].setBackground(Color.ORANGE);
-				next2[rows][cols].setBounds(40 + (cols * 30), 420 + (rows * 30), 30, 30);
-
-				next3[rows][cols].setBackground(Color.ORANGE);
-				next3[rows][cols].setBounds(40 + (cols * 30), 490 + (rows * 30), 30, 30);
-
-				this.add(next1[rows][cols]);
-				this.add(next2[rows][cols]);
-				this.add(next3[rows][cols]);
-			}
-		}
+		updateNextPieceDisplay();
 
 		// create button to quit game
 		JButton quit = new JButton("Quit");
@@ -142,6 +124,45 @@ public class ScorePanel extends JPanel {
 					heldPiece[rows][cols].setBackground(Color.GRAY);
 					heldPiece[rows][cols].setBounds(40 + (cols * 30), 200 + (rows * 30), 30, 30);
 					this.add(heldPiece[rows][cols]);
+				}
+			}
+		}
+	}
+
+
+
+	public void updateNextPieceDisplay(){
+		for(int rows = 0; rows < 2; rows++){
+			for(int cols = 0; cols < 4; cols++){
+				try{
+					next1[rows][cols].setBackground(TetrisApp.getNextPieces().get(0).getColor());
+					next1[rows][cols].setBounds(40 + (cols * 30), 350 + (rows * 30), 30, 30);
+					this.add(next1[rows][cols]);
+				}
+				catch(IndexOutOfBoundsException | ArrayIndexOutOfBoundsException e){
+					next1[rows][cols].setBackground(Color.GRAY);
+					next1[rows][cols].setBounds(40 + (cols * 30), 350 + (rows * 30), 30, 30);
+					this.add(next1[rows][cols]);
+				}
+				try{
+					next2[rows][cols].setBackground(TetrisApp.getNextPieces().get(1).getColor());
+					next2[rows][cols].setBounds(40 + (cols * 30), 420 + (rows * 30), 30, 30);
+					this.add(next2[rows][cols]);
+				}
+				catch(IndexOutOfBoundsException | ArrayIndexOutOfBoundsException e){
+					next2[rows][cols].setBackground(Color.GRAY);
+					next2[rows][cols].setBounds(40 + (cols * 30), 420 + (rows * 30), 30, 30);
+					this.add(next2[rows][cols]);
+				}
+				try{
+					next3[rows][cols].setBackground(TetrisApp.getNextPieces().get(2).getColor());
+					next3[rows][cols].setBounds(40 + (cols * 30), 490 + (rows * 30), 30, 30);
+					this.add(next3[rows][cols]);
+				}
+				catch(IndexOutOfBoundsException | ArrayIndexOutOfBoundsException e){
+					next3[rows][cols].setBackground(Color.GRAY);
+					next3[rows][cols].setBounds(40 + (cols * 30), 490 + (rows * 30), 30, 30);
+					this.add(next3[rows][cols]);
 				}
 			}
 		}
