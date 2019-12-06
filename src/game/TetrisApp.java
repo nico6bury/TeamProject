@@ -34,14 +34,13 @@ public class TetrisApp {
 		playingGame = true;
 		nextPieces = new ArrayList<>();
 		holdPiece = generatePiece();
+		while (nextPieces.size() < 3) {
+			nextPieces.add(generatePiece());
+		}
 		gf = new GameFrame();
 		gf.setVisible(true);
 		board = gf.getBoard();
 		score = gf.getScore();
-
-		while (nextPieces.size() < 3) {
-			nextPieces.add(generatePiece());
-		}
 
 		while (playingGame) {
 			board.placePiece(nextPieces.get(0));

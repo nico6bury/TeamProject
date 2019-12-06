@@ -113,14 +113,14 @@ public class ScorePanel extends JPanel {
 		for (int rows = 0; rows < 2; rows++) {
 			for (int cols = 0; cols < 4; cols++) {
 				try {
-					if(TetrisApp.getHoldPiece().getShape()[rows][cols] == 1) {
+					if (TetrisApp.getHoldPiece().getShape()[rows][cols] == 1) {
 						heldPiece[rows][cols].setBackground(TetrisApp.getHoldPiece().getColor());
 						heldPiece[rows][cols].setBounds(40 + (cols * 30), 200 + (rows * 30), 30, 30);
 						this.add(heldPiece[rows][cols]);
 					} else {
 						throw new NullPointerException("Piece is not there");
 					}
-				} catch(ArrayIndexOutOfBoundsException | NullPointerException e) {
+				} catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
 					heldPiece[rows][cols].setBackground(Color.GRAY);
 					heldPiece[rows][cols].setBounds(40 + (cols * 30), 200 + (rows * 30), 30, 30);
 					this.add(heldPiece[rows][cols]);
@@ -129,37 +129,44 @@ public class ScorePanel extends JPanel {
 		}
 	}
 
-
-
-	public void updateNextPieceDisplay(){
-		for(int rows = 0; rows < 2; rows++){
-			for(int cols = 0; cols < 4; cols++){
-				try{
-					next1[rows][cols].setBackground(TetrisApp.getNextPieces().get(0).getColor());
-					next1[rows][cols].setBounds(40 + (cols * 30), 350 + (rows * 30), 30, 30);
-					this.add(next1[rows][cols]);
-				}
-				catch(IndexOutOfBoundsException | ArrayIndexOutOfBoundsException e){
+	public void updateNextPieceDisplay() {
+		for (int rows = 0; rows < 2; rows++) {
+			for (int cols = 0; cols < 4; cols++) {
+				try {
+					if (TetrisApp.getNextPieces().get(0).getShape()[rows][cols] == 1) {
+						next1[rows][cols].setBackground(TetrisApp.getNextPieces().get(0).getColor());
+						next1[rows][cols].setBounds(40 + (cols * 30), 350 + (rows * 30), 30, 30);
+						this.add(next1[rows][cols]);
+					} else {
+						throw new NullPointerException("Piece is not there");
+					}
+				} catch (IndexOutOfBoundsException | NullPointerException e) {
 					next1[rows][cols].setBackground(Color.GRAY);
 					next1[rows][cols].setBounds(40 + (cols * 30), 350 + (rows * 30), 30, 30);
 					this.add(next1[rows][cols]);
 				}
-				try{
-					next2[rows][cols].setBackground(TetrisApp.getNextPieces().get(1).getColor());
-					next2[rows][cols].setBounds(40 + (cols * 30), 420 + (rows * 30), 30, 30);
-					this.add(next2[rows][cols]);
-				}
-				catch(IndexOutOfBoundsException | ArrayIndexOutOfBoundsException e){
+				try {
+					if (TetrisApp.getNextPieces().get(1).getShape()[rows][cols] == 1) {
+						next2[rows][cols].setBackground(TetrisApp.getNextPieces().get(1).getColor());
+						next2[rows][cols].setBounds(40 + (cols * 30), 420 + (rows * 30), 30, 30);
+						this.add(next2[rows][cols]);
+					} else {
+						throw new NullPointerException("Piece is not there");
+					}
+				} catch (IndexOutOfBoundsException | NullPointerException e) {
 					next2[rows][cols].setBackground(Color.GRAY);
 					next2[rows][cols].setBounds(40 + (cols * 30), 420 + (rows * 30), 30, 30);
 					this.add(next2[rows][cols]);
 				}
-				try{
-					next3[rows][cols].setBackground(TetrisApp.getNextPieces().get(2).getColor());
-					next3[rows][cols].setBounds(40 + (cols * 30), 490 + (rows * 30), 30, 30);
-					this.add(next3[rows][cols]);
-				}
-				catch(IndexOutOfBoundsException | ArrayIndexOutOfBoundsException e){
+				try {
+					if (TetrisApp.getNextPieces().get(2).getShape()[rows][cols] == 1) {
+						next3[rows][cols].setBackground(TetrisApp.getNextPieces().get(2).getColor());
+						next3[rows][cols].setBounds(40 + (cols * 30), 490 + (rows * 30), 30, 30);
+						this.add(next3[rows][cols]);
+					} else {
+						throw new NullPointerException("Piece is not there");
+					}
+				} catch (IndexOutOfBoundsException | NullPointerException e) {
 					next3[rows][cols].setBackground(Color.GRAY);
 					next3[rows][cols].setBounds(40 + (cols * 30), 490 + (rows * 30), 30, 30);
 					this.add(next3[rows][cols]);
