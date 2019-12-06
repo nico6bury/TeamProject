@@ -133,6 +133,7 @@ public class Board extends JPanel {
 				tempVertShift = vertShift;
 				if (TetrisApp.getGameFrame().getFastDrop()) {
 					TetrisApp.getScore().updateUserScore(5);
+					TetrisApp.getGameFrame().getScorePanel().updateUserScoreDisplay(TetrisApp.getScore());
 				}
 				System.out.println("Current Score: " + TetrisApp.getScore().getUserScore());
 			}
@@ -458,8 +459,9 @@ public class Board extends JPanel {
 				dropTimer = System.currentTimeMillis();
 			}
 		}
-		// Give the user points for clearing the row
+		// Give the user points for clearing the row and update the ScorePanel
 		TetrisApp.getScore().updateUserScore(250);
+		TetrisApp.getGameFrame().getScorePanel().updateUserScoreDisplay(TetrisApp.getScore());
 	}
 
 	/**

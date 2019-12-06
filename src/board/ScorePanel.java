@@ -19,6 +19,7 @@ public class ScorePanel extends JPanel {
 	 * Generated Serial Version ID
 	 */
 	private static final long serialVersionUID = 1955286229728891072L;
+	private static JLabel userScore;
 	private static Point[][] heldPiece;
 	private static Point[][] next1;
 	private static Point[][] next2;
@@ -52,7 +53,7 @@ public class ScorePanel extends JPanel {
 		// create a label to display user score
 		Integer intScore = score.getUserScore();
 
-		JLabel userScore = new JLabel("Your Score: " + intScore.toString(), JLabel.CENTER);
+		userScore = new JLabel("Your Score: " + intScore.toString(), JLabel.CENTER);
 		
 		userScore.setFont(scoreFont);
 		userScore.setBounds(0,80,this.getWidth(), 140);
@@ -203,5 +204,11 @@ public class ScorePanel extends JPanel {
 		sb.append("</body></HTML>");
 		String stringScores = sb.toString();
 		return stringScores;
+	}
+
+	public void updateUserScoreDisplay(Score score){
+		Integer intScore = score.getUserScore();
+		userScore.setText("Your Score: " + intScore.toString());
+
 	}
 }
