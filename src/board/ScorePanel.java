@@ -62,13 +62,36 @@ public class ScorePanel extends JPanel {
 		next.setForeground(Color.YELLOW);
 		this.add(next);
 
+		//create 3 2x4 Point Arrays to display the next pieces
+		Point [][] next1 = new Point[2][4];
+		Point [][] next2 = new Point[2][4];
+		Point [][] next3 = new Point[2][4];
+
+		for(int rows = 0; rows < 2; rows++){
+			for(int cols = 0; cols < 4; cols++){
+				next1[rows][cols] = new Point(rows, cols);
+				next2[rows][cols] = new Point(rows, cols);
+				next3[rows][cols] = new Point(rows, cols);
+			}
+		}
+		
+		for(int rows = 0; rows < 2; rows++ ){
+			for(int cols = 0; cols < 4 ; cols++){
+				next1[rows][cols].setBackground(Color.ORANGE);
+				next1[rows][cols].setBounds(40+(cols*30), 350+(rows*30), 30, 30);
+
+				this.add(next1[rows][cols]);
+
+			}
+		}
+
 		//create button to quit game
 		JButton quit = new JButton("Quit");
 		quit.setBackground(Color.BLACK);
 		quit.setForeground(Color.YELLOW);
 		//Font quitFont = new Font(next.getFont().getName(), Font.BOLD, 24);
 		quit.setFont(allFont);
-		quit.setBounds(0,500,this.getWidth(),50);
+		quit.setBounds(0,570,this.getWidth(),30);
 		quit.setBorderPainted(false);
 		
 		quit.addActionListener(new ActionListener() {
@@ -81,5 +104,8 @@ public class ScorePanel extends JPanel {
 		
 		
 	}
+	//update nextPieces:
+
+	
 	
 }
