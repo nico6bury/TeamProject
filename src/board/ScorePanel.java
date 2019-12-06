@@ -80,8 +80,15 @@ public class ScorePanel extends JPanel {
 				next1[rows][cols].setBackground(Color.ORANGE);
 				next1[rows][cols].setBounds(40+(cols*30), 350+(rows*30), 30, 30);
 
-				this.add(next1[rows][cols]);
+				next2[rows][cols].setBackground(Color.ORANGE);
+				next2[rows][cols].setBounds(40+(cols*30), 420+(rows*30), 30, 30);
 
+				next3[rows][cols].setBackground(Color.ORANGE);
+				next3[rows][cols].setBounds(40+(cols*30), 490+(rows*30), 30, 30);
+
+				this.add(next1[rows][cols]);
+				this.add(next2[rows][cols]);
+				this.add(next3[rows][cols]);
 			}
 		}
 
