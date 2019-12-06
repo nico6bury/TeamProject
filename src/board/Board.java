@@ -373,24 +373,7 @@ public class Board extends JPanel {
 	 */
 	private boolean rotate(GenericPiece p, int currentRow) {
 		int ind = 0;
-		if (p instanceof JPiece) {
-			ind = (p.getCurrentShapeIndex() == 3 ? 0 : p.getCurrentShapeIndex() + 1);
-		} else if (p instanceof LPiece) {
-			ind = (p.getCurrentShapeIndex() == 3 ? 0 : p.getCurrentShapeIndex() + 1);
-		} else if (p instanceof SPiece) {
-			ind = (p.getCurrentShapeIndex() == 1 ? 0 : 1);
-		} else if (p instanceof SquarePiece) {
-			return false;
-		} else if (p instanceof StickPiece) {
-			ind = (p.getCurrentShapeIndex() == 1 ? 0 : 1);
-		} else if (p instanceof TPiece) {
-			ind = (p.getCurrentShapeIndex() == 3 ? 0 : p.getCurrentShapeIndex() + 1);
-		} else if (p instanceof ZPiece) {
-			ind = (p.getCurrentShapeIndex() == 1 ? 0 : 1);
-		} else {
-			System.out.println("Tried to rotate an invalid piece");
-			System.exit(0);
-		}
+		ind = p.getCurrentShapeIndex() == p.getShapeOptions().size() - 1 ? 0 : p.getCurrentShapeIndex() + 1;
 
 		// Sanity checks
 		int[][] newShape = p.getShapeOptions().get(ind);
