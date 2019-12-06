@@ -90,26 +90,47 @@ public class TetrisApp {
 		}
 	}
 
+	/**
+	 * Get the score object of the game.
+	 * 
+	 * @return The score object.
+	 */
 	public static Score getScore() {
 		return score;
 	}
 
-	public static Board getBoard() {
-		return board;
-	}
-
+	/**
+	 * Gets the GameFrame object of the game.
+	 * 
+	 * @return The GameFrame object.
+	 */
 	public static GameFrame getGameFrame() {
 		return gf;
 	}
 
+	/**
+	 * Gets an ArrayList of the pieces that are up next in the queue.
+	 * 
+	 * @return An ArrayList of GenericPiece objects.
+	 */
 	public static ArrayList<GenericPiece> getNextPieces() {
 		return nextPieces;
 	}
 
+	/**
+	 * Sets the piece being held in the hold.
+	 * 
+	 * @param p The piece to set in the hold.
+	 */
 	public static void setHoldPiece(GenericPiece p) {
 		holdPiece = p;
 	}
 
+	/**
+	 * Gets the piece that is currently being held in the hold.
+	 * 
+	 * @return A GenericPiece object of the piece being held.
+	 */
 	public static GenericPiece getHoldPiece() {
 		return holdPiece;
 	}

@@ -18,6 +18,9 @@ public class GameFrame extends JFrame implements KeyEventDispatcher {
 	private ScorePanel scorePanel;
 	private boolean fastDrop = false;
 
+	/**
+	 * Creates a new game frame and it's components.
+	 */
 	public GameFrame() {
 		setUndecorated(true);
 		setLayout(null);
@@ -25,26 +28,46 @@ public class GameFrame extends JFrame implements KeyEventDispatcher {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
 		setTitle("CIS 200 Tetris App");
-		board = new Board();
 		score = new Score();
+		board = new Board();
 		this.add(board);
 		scorePanel = new ScorePanel();
 		this.add(scorePanel);
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this);
 	}
 
+	/**
+	 * Gets the board of the game.
+	 * 
+	 * @return The Board object of the game.
+	 */
 	public Board getBoard() {
 		return board;
 	}
 
+	/**
+	 * Get whether or not the piece is currently in fast drop mode.
+	 * 
+	 * @return true if the piece is in fast drop mode.
+	 */
 	public boolean getFastDrop() {
 		return fastDrop;
 	}
 
+	/**
+	 * Gets the score object of the game.
+	 * 
+	 * @return the score object of the game.
+	 */
 	public Score getScore() {
 		return score;
 	}
 
+	/**
+	 * Get the score panel of the game.
+	 * 
+	 * @return the score panel object of the game.
+	 */
 	public ScorePanel getScorePanel() {
 		return scorePanel;
 	}
