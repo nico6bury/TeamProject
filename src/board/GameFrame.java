@@ -31,7 +31,7 @@ public class GameFrame extends JFrame implements KeyEventDispatcher {
 		score = new Score();
 		board = new Board();
 		this.add(board);
-		scorePanel = new ScorePanel();
+		scorePanel = new ScorePanel(score);
 		this.add(scorePanel);
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this);
 	}
