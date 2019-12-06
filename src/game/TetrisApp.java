@@ -30,22 +30,28 @@ public class TetrisApp {
 	}
 
 	private static void startGame() {
-		// Create and display the board
+		//Set variables
 		playingGame = true;
 		nextPieces = new ArrayList<>();
 		holdPiece = generatePiece();
 		while (nextPieces.size() < 3) {
 			nextPieces.add(generatePiece());
 		}
+
+		// Create and display the board
 		gf = new GameFrame();
 		gf.setVisible(true);
 		board = gf.getBoard();
 		score = gf.getScore();
-
+		gf.getScorePanel().updateHoldDisplay();
+		gf.getScorePanel().updateNextPieceDisplay();
+		
 		while (playingGame) {
-			board.placePiece(nextPieces.get(0));
-			nextPieces.remove(nextPieces.get(0));
+			GenericPiece tmp = nextPieces.get(0);
+			nextPieces.remove(0);
 			nextPieces.add(generatePiece());
+			gf.getScorePanel().updateNextPieceDisplay();
+			board.placePiece(tmp);
 		}
 	}
 

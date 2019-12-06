@@ -60,4 +60,8 @@ public abstract class GenericPiece {
 	public void setCurrentShape(int currentShape) {
 		this.currentShapeIndex = currentShape;
 	}
+	
+	public boolean equals(GenericPiece p) {
+		return p.getColor().equals(this.getColor());
+	}
 }

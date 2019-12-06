@@ -1,13 +1,16 @@
 package board;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import game.TetrisApp;
-import pieces.GenericPiece;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import data.Score;
+import game.TetrisApp;
 
 /**
  * ScorePanel.java Created by Laura Baldwin Purpose: This class is to display
@@ -39,7 +42,7 @@ public class ScorePanel extends JPanel {
 		title.setBounds(0, 0, this.getWidth(), 40);
 		title.setForeground(Color.YELLOW);
 		this.add(title);
-		
+
 		// create a label in which to display high scores
 		JLabel scores = new JLabel(getHighScores(score), JLabel.CENTER);
 		Font scoreFont = new Font(title.getFont().getName(), Font.BOLD, 20);
@@ -48,15 +51,15 @@ public class ScorePanel extends JPanel {
 		scores.setForeground(Color.YELLOW);
 		this.add(scores);
 
-		//create a label under which to display the user's score
+		// create a label under which to display the user's score
 
 		// create a label to display user score
 		Integer intScore = score.getUserScore();
 
 		userScore = new JLabel("Your Score: " + intScore.toString(), JLabel.CENTER);
-		
+
 		userScore.setFont(scoreFont);
-		userScore.setBounds(0,80,this.getWidth(), 140);
+		userScore.setBounds(0, 80, this.getWidth(), 140);
 		userScore.setForeground(Color.YELLOW);
 		this.add(userScore);
 
@@ -75,9 +78,6 @@ public class ScorePanel extends JPanel {
 				heldPiece[rows][cols] = new Point(rows, cols);
 			}
 		}
-
-		// display the held piece
-		updateHoldDisplay();
 
 		// create a label under which to display the next pieces
 		JLabel next = new JLabel("Next:", JLabel.CENTER);
@@ -99,7 +99,6 @@ public class ScorePanel extends JPanel {
 			}
 		}
 		// display the next pieces
-		updateNextPieceDisplay();
 
 		// create button to quit game
 		JButton quit = new JButton("Quit");
@@ -119,7 +118,6 @@ public class ScorePanel extends JPanel {
 		this.add(quit);
 
 	}
-	// update nextPieces:
 
 	public void updateHoldDisplay() {
 		for (int rows = 0; rows < 2; rows++) {
@@ -139,6 +137,7 @@ public class ScorePanel extends JPanel {
 				}
 			}
 		}
+		repaint();
 	}
 
 	public void updateNextPieceDisplay() {
@@ -185,18 +184,18 @@ public class ScorePanel extends JPanel {
 				}
 			}
 		}
+		repaint();
 	}
 
-	private String getHighScores(Score score){
-		//create String [] to parse the highscores into
-		String [] highScores = score.toString().split("\n");
+	private String getHighScores(Score score) {
+		// create String [] to parse the highscores into
+		String[] highScores = score.toString().split("\n");
 		StringBuilder sb = new StringBuilder();
 		sb.append("<HTML><body>");
-		for(int count = 0; count < highScores.length; count++){
-			if(count == highScores.length-1){
+		for (int count = 0; count < highScores.length; count++) {
+			if (count == highScores.length - 1) {
 				sb.append(highScores[count]);
-			}
-			else{
+			} else {
 				sb.append(highScores[count]);
 				sb.append("<br>");
 			}
@@ -206,7 +205,7 @@ public class ScorePanel extends JPanel {
 		return stringScores;
 	}
 
-	public void updateUserScoreDisplay(Score score){
+	public void updateUserScoreDisplay(Score score) {
 		Integer intScore = score.getUserScore();
 		userScore.setText("Your Score: " + intScore.toString());
 
