@@ -321,7 +321,7 @@ public class Board extends JPanel {
 		for (int i = 0; i < newShape.length; i++) {
 			for (int j = 0; j < newShape[i].length; j++) {
 				if (newShape[i][j] == 1) {
-					points[currentRow - i][j + horzShift].setColor(p.getColor());
+					points[currentRow - i][j + horzShift].setInUse(p);
 					pieceLocations[ct] = points[currentRow - i][j + horzShift];
 					ct++;
 				}
