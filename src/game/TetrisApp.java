@@ -32,49 +32,45 @@ public class TetrisApp {
 	private static void startGame() {
 		// Create and display the board
 		playingGame = true;
+		nextPieces = new ArrayList<>();
+		holdPiece = generatePiece();
 		gf = new GameFrame();
 		gf.setVisible(true);
 		board = gf.getBoard();
 		score = gf.getScore();
-		nextPieces = new ArrayList<>();
-		populateNextPieces();
-		holdPiece = null;
+
+		while (nextPieces.size() < 3) {
+			nextPieces.add(generatePiece());
+		}
+
 		while (playingGame) {
 			board.placePiece(nextPieces.get(0));
 			nextPieces.remove(nextPieces.get(0));
-			populateNextPieces();
+			nextPieces.add(generatePiece());
 		}
 	}
 
-	private static void populateNextPieces() {
+	public static GenericPiece generatePiece() {
 		Random random = new Random();
-		while (nextPieces.size() < 3) {
-			int next = random.nextInt(7);
-			switch (next) {
-			case 0:
-				nextPieces.add(new JPiece());
-				break;
-			case 1:
-				nextPieces.add(new LPiece());
-				break;
-			case 2:
-				nextPieces.add(new SPiece());
-				break;
-			case 3:
-				nextPieces.add(new SquarePiece());
-				break;
-			case 4:
-				nextPieces.add(new StickPiece());
-				break;
-			case 5:
-				nextPieces.add(new TPiece());
-				break;
-			case 6:
-				nextPieces.add(new ZPiece());
-				break;
-			default:
-				System.out.println("ERROR, Invalid piece option: " + next);
-			}
+		int next = random.nextInt(7);
+		switch (next) {
+		case 0:
+			return new JPiece();
+		case 1:
+			return new LPiece();
+		case 2:
+			return new SPiece();
+		case 3:
+			return new SquarePiece();
+		case 4:
+			return new StickPiece();
+		case 5:
+			return new TPiece();
+		case 6:
+			return new ZPiece();
+		default:
+			System.out.println("ERROR, Invalid piece option: " + next);
+			return null;
 		}
 	}
 

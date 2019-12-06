@@ -34,6 +34,7 @@ public class Board extends JPanel {
 	private int horzShift = 0;
 	private int vertShift = 0;
 	private boolean needsTurn = false;
+	private boolean needsFlip = false;
 	private Point[][] points;
 	private Point[] pieceLocations;
 
@@ -90,7 +91,7 @@ public class Board extends JPanel {
 			if (!canShiftDown(p)) {
 				TetrisApp.stopGame();
 			}
-			
+
 			// Shift down a row if not on row 2
 			onRow++;
 			if (onRow < 2) {
@@ -117,6 +118,11 @@ public class Board extends JPanel {
 				rotate(p, onRow);
 				needsTurn = false;
 				tempHorzShift = horzShift;
+			}
+			// Check if the pieces needs to be flipped.
+			if (needsFlip) {
+				p = flipHold(p, TetrisApp.getHoldPiece(), onRow);
+				needsFlip = false;
 			}
 			// Check if the piece needs to move down.
 			if (dropTimer + timeGiven <= System.currentTimeMillis() || tempVertShift != vertShift) {
@@ -329,6 +335,67 @@ public class Board extends JPanel {
 		return true;
 	}
 
+	private GenericPiece flipHold(GenericPiece oldPiece, GenericPiece heldPiece, int currentRow) {
+		// Sanity checks
+		int[][] newShape = heldPiece.getShapeOptions().get(0);
+		// Adjust left, right, and down shifts
+		for (int i = 0; i < newShape.length; i++) {
+			for (int j = 0; j < newShape[i].length; j++) {
+				if (newShape[i][j] == 1) {
+					while (j + horzShift >= COLS) {
+						horzShift--;
+					}
+					while (j + horzShift < 0) {
+						horzShift++;
+					}
+					while (currentRow - newShape.length < 0) {
+						currentRow++;
+					}
+				}
+			}
+		}
+		
+		for (int i = 0; i < newShape.length; i++) {
+			for (int j = 0; j < newShape[i].length; j++) {
+				// Check that the shape will fit in the board once flipped out
+				if (newShape[i][j] == 1 && currentRow + newShape.length > ROWS + 1) {
+					return oldPiece;
+				}
+				// Check that the piece will not collide with placed pieces
+				if (newShape[i][j] == 1) {
+					if (points[currentRow - i][j + horzShift].isInUse()
+							&& !points[currentRow - i][j + horzShift].isInPlay()) {
+						return oldPiece;
+					}
+				}
+			}
+		}
+
+		// Clear out old piece locations
+		for (Point rp : pieceLocations) {
+			if (rp != null) {
+				rp.setNotUsing();
+			}
+		}
+		pieceLocations = new Point[10];
+
+		// Place the new piece.
+		int ct = 0;
+		for (int i = 0; i < newShape.length; i++) {
+			for (int j = 0; j < newShape[i].length; j++) {
+				if (newShape[i][j] == 1) {
+					points[currentRow - i][j + horzShift].setInUse(heldPiece);
+					pieceLocations[ct] = points[currentRow - i][j + horzShift];
+					ct++;
+				}
+			}
+		}
+		oldPiece.setCurrentShape(0);
+		TetrisApp.setHoldPiece(oldPiece);
+		TetrisApp.getGameFrame().getScorePanel().updateHoldDisplay();
+		return heldPiece;
+	}
+
 	/**
 	 * Checks whether or not the row is full and needs to be cleared.
 	 * 
@@ -432,5 +499,13 @@ public class Board extends JPanel {
 
 	public int getRows() {
 		return ROWS;
+	}
+
+	public void setNeedsFlip(boolean b) {
+		this.needsFlip = b;
+	}
+
+	public boolean getNeedsFlip() {
+		return this.needsFlip;
 	}
 }

@@ -36,13 +36,17 @@ public class GameFrame extends JFrame implements KeyEventDispatcher {
 	public Board getBoard() {
 		return board;
 	}
-	
+
 	public boolean getFastDrop() {
 		return fastDrop;
 	}
 
 	public Score getScore() {
 		return score;
+	}
+
+	public ScorePanel getScorePanel() {
+		return scorePanel;
 	}
 
 	@Override
@@ -66,6 +70,11 @@ public class GameFrame extends JFrame implements KeyEventDispatcher {
 			// 38 is the up arrow that rotates the piece.
 			if (e.getKeyCode() == 38) {
 				board.setNeedsTurn(true);
+			}
+
+			// 17 is the right ctrl that flips the held piece.
+			if (e.getKeyCode() == 17) {
+				board.setNeedsFlip(true);
 			}
 		}
 		if (e.getID() == KeyEvent.KEY_RELEASED) {
